@@ -30,87 +30,87 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBox Name="Cell11" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="0" Grid.Column="0" Background="LightGreen"/>
-        <TextBox Name="Cell12" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="0" Grid.Column="1" Background="LightGreen"/>
-        <TextBox Name="Cell13" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="0" Grid.Column="2" Background="LightGreen"/>
-        <TextBox Name="Cell25" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="0" Grid.Column="3"/>
-        <TextBox Name="Cell14" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="0" Grid.Column="4"/>
-        <TextBox Name="Cell15" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="0" Grid.Column="5"/>
-        <TextBox Name="Cell16" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="0" Grid.Column="6" Background="LightGreen"/>
-        <TextBox Name="Cell17" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="0" Grid.Column="7" Background="LightGreen"/>
-        <TextBox Name="Cell18" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="0" Grid.Column="8" Background="LightGreen"/>
-        <TextBox Name="Cell19" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="1" Grid.Column="0" Background="LightGreen"/>
-        <TextBox Name="Cell21" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="1" Grid.Column="1" Background="LightGreen"/>
-        <TextBox Name="Cell22" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="1" Grid.Column="2" Background="LightGreen"/>
-        <TextBox Name="Cell23" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="1" Grid.Column="3"/>
-        <TextBox Name="Cell24" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="1" Grid.Column="4"/>
-        <TextBox Name="Cell26" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="1" Grid.Column="5"/>
-        <TextBox Name="Cell27" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="1" Grid.Column="6" Background="LightGreen"/>
-        <TextBox Name="Cell28" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="1" Grid.Column="7" Background="LightGreen"/>
-        <TextBox Name="Cell29" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="1" Grid.Column="8" Background="LightGreen"/>
-        <TextBox Name="Cell31" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="2" Grid.Column="0" Background="LightGreen"/>
-        <TextBox Name="Cell32" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="2" Grid.Column="1" Background="LightGreen"/>
-        <TextBox Name="Cell33" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="2" Grid.Column="2" Background="LightGreen"/>
-        <TextBox Name="Cell34" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="2" Grid.Column="3"/>
-        <TextBox Name="Cell35" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="2" Grid.Column="4"/>
-        <TextBox Name="Cell36" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="2" Grid.Column="5"/>
-        <TextBox Name="Cell37" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="2" Grid.Column="6" Background="LightGreen"/>
-        <TextBox Name="Cell38" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="2" Grid.Column="7" Background="LightGreen"/>
-        <TextBox Name="Cell39" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="2" Grid.Column="8" Background="LightGreen"/>
-        <TextBox Name="Cell41" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="3" Grid.Column="0"/>
-        <TextBox Name="Cell42" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="3" Grid.Column="1"/>
-        <TextBox Name="Cell43" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="3" Grid.Column="2"/>
-        <TextBox Name="Cell44" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="3" Grid.Column="3" Background="LightGreen"/>
-        <TextBox Name="Cell45" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="3" Grid.Column="4" Background="LightGreen"/>
-        <TextBox Name="Cell46" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="3" Grid.Column="5" Background="LightGreen"/>
-        <TextBox Name="Cell47" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="3" Grid.Column="6"/>
-        <TextBox Name="Cell48" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="3" Grid.Column="7"/>
-        <TextBox Name="Cell49" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="3" Grid.Column="8"/>
-        <TextBox Name="Cell51" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="4" Grid.Column="0"/>
-        <TextBox Name="Cell52" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="4" Grid.Column="1"/>
-        <TextBox Name="Cell53" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="4" Grid.Column="2"/>
-        <TextBox Name="Cell54" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="4" Grid.Column="3" Background="LightGreen"/>
-        <TextBox Name="Cell55" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="4" Grid.Column="4" Background="LightGreen"/>
-        <TextBox Name="Cell56" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="4" Grid.Column="5" Background="LightGreen"/>
-        <TextBox Name="Cell57" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="4" Grid.Column="6"/>
-        <TextBox Name="Cell58" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="4" Grid.Column="7"/>
-        <TextBox Name="Cell59" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="4" Grid.Column="8"/>
-        <TextBox Name="Cell61" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="5" Grid.Column="0"/>
-        <TextBox Name="Cell62" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="5" Grid.Column="1"/>
-        <TextBox Name="Cell63" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="5" Grid.Column="2"/>
-        <TextBox Name="Cell64" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="5" Grid.Column="3" Background="LightGreen"/>
-        <TextBox Name="Cell65" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="5" Grid.Column="4" Background="LightGreen"/>
-        <TextBox Name="Cell66" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="5" Grid.Column="5" Background="LightGreen"/>
-        <TextBox Name="Cell67" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="5" Grid.Column="6"/>
-        <TextBox Name="Cell68" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="5" Grid.Column="7"/>
-        <TextBox Name="Cell69" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="5" Grid.Column="8"/>
-        <TextBox Name="Cell71" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="6" Grid.Column="0" Background="LightGreen"/>
-        <TextBox Name="Cell72" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="6" Grid.Column="1" Background="LightGreen"/>
-        <TextBox Name="Cell73" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="6" Grid.Column="2" Background="LightGreen"/>
-        <TextBox Name="Cell74" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="6" Grid.Column="3"/>
-        <TextBox Name="Cell75" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="6" Grid.Column="4"/>
-        <TextBox Name="Cell76" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="6" Grid.Column="5"/>
-        <TextBox Name="Cell77" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="6" Grid.Column="6" Background="LightGreen"/>
-        <TextBox Name="Cell78" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="6" Grid.Column="7" Background="LightGreen"/>
-        <TextBox Name="Cell79" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="6" Grid.Column="8" Background="LightGreen"/>
-        <TextBox Name="Cell81" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="7" Grid.Column="0" Background="LightGreen"/>
-        <TextBox Name="Cell82" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="7" Grid.Column="1" Background="LightGreen"/>
-        <TextBox Name="Cell83" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="7" Grid.Column="2" Background="LightGreen"/>
-        <TextBox Name="Cell84" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="7" Grid.Column="3"/>
-        <TextBox Name="Cell85" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="7" Grid.Column="4"/>
-        <TextBox Name="Cell86" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="7" Grid.Column="5"/>
-        <TextBox Name="Cell87" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="7" Grid.Column="6" Background="LightGreen"/>
-        <TextBox Name="Cell88" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="7" Grid.Column="7" Background="LightGreen"/>
-        <TextBox Name="Cell89" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="7" Grid.Column="8" Background="LightGreen"/>
-        <TextBox Name="Cell91" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="8" Grid.Column="0" Background="LightGreen"/>
-        <TextBox Name="Cell92" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="8" Grid.Column="1" Background="LightGreen"/>
-        <TextBox Name="Cell93" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="8" Grid.Column="2" Background="LightGreen"/>
-        <TextBox Name="Cell94" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="8" Grid.Column="3"/>
-        <TextBox Name="Cell95" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="8" Grid.Column="4"/>
-        <TextBox Name="Cell96" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="8" Grid.Column="5"/>
-        <TextBox Name="Cell97" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="8" Grid.Column="6" Background="LightGreen"/>
-        <TextBox Name="Cell98" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="8" Grid.Column="7" Background="LightGreen"/>
-        <TextBox Name="Cell99" FontSize="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" MaxLength="1" Grid.Row="8" Grid.Column="8" Background="LightGreen"/>
+        <TextBox Name="Cell11"/>
+        <TextBox Name="Cell12"/>
+        <TextBox Name="Cell13"/>
+        <TextBox Name="Cell14"/>
+        <TextBox Name="Cell15"/>
+        <TextBox Name="Cell16"/>
+        <TextBox Name="Cell17"/>
+        <TextBox Name="Cell18"/>
+        <TextBox Name="Cell19"/>
+        <TextBox Name="Cell21"/>
+        <TextBox Name="Cell22"/>
+        <TextBox Name="Cell23"/>
+        <TextBox Name="Cell24"/>
+        <TextBox Name="Cell25"/>
+        <TextBox Name="Cell26"/>
+        <TextBox Name="Cell27"/>
+        <TextBox Name="Cell28"/>
+        <TextBox Name="Cell29"/>
+        <TextBox Name="Cell31"/>
+        <TextBox Name="Cell32"/>
+        <TextBox Name="Cell33"/>
+        <TextBox Name="Cell34"/>
+        <TextBox Name="Cell35"/>
+        <TextBox Name="Cell36"/>
+        <TextBox Name="Cell37"/>
+        <TextBox Name="Cell38"/>
+        <TextBox Name="Cell39"/>
+        <TextBox Name="Cell41"/>
+        <TextBox Name="Cell42"/>
+        <TextBox Name="Cell43"/>
+        <TextBox Name="Cell44"/>
+        <TextBox Name="Cell45"/>
+        <TextBox Name="Cell46"/>
+        <TextBox Name="Cell47"/>
+        <TextBox Name="Cell48"/>
+        <TextBox Name="Cell49"/>
+        <TextBox Name="Cell51"/>
+        <TextBox Name="Cell52"/>
+        <TextBox Name="Cell53"/>
+        <TextBox Name="Cell54"/>
+        <TextBox Name="Cell55"/>
+        <TextBox Name="Cell56"/>
+        <TextBox Name="Cell57"/>
+        <TextBox Name="Cell58"/>
+        <TextBox Name="Cell59"/>
+        <TextBox Name="Cell61"/>
+        <TextBox Name="Cell62"/>
+        <TextBox Name="Cell63"/>
+        <TextBox Name="Cell64"/>
+        <TextBox Name="Cell65"/>
+        <TextBox Name="Cell66"/>
+        <TextBox Name="Cell67"/>
+        <TextBox Name="Cell68"/>
+        <TextBox Name="Cell69"/>
+        <TextBox Name="Cell71"/>
+        <TextBox Name="Cell72"/>
+        <TextBox Name="Cell73"/>
+        <TextBox Name="Cell74"/>
+        <TextBox Name="Cell75"/>
+        <TextBox Name="Cell76"/>
+        <TextBox Name="Cell77"/>
+        <TextBox Name="Cell78"/>
+        <TextBox Name="Cell79"/>
+        <TextBox Name="Cell81"/>
+        <TextBox Name="Cell82"/>
+        <TextBox Name="Cell83"/>
+        <TextBox Name="Cell84"/>
+        <TextBox Name="Cell85"/>
+        <TextBox Name="Cell86"/>
+        <TextBox Name="Cell87"/>
+        <TextBox Name="Cell88"/>
+        <TextBox Name="Cell89"/>
+        <TextBox Name="Cell91"/>
+        <TextBox Name="Cell92"/>
+        <TextBox Name="Cell93"/>
+        <TextBox Name="Cell94"/>
+        <TextBox Name="Cell95"/>
+        <TextBox Name="Cell96"/>
+        <TextBox Name="Cell97"/>
+        <TextBox Name="Cell98"/>
+        <TextBox Name="Cell99"/>
         <Button Grid.Row="9" Grid.Column="3" Grid.ColumnSpan="3" Content="Solve" Click="ButtonSolve_Click"/>
     </Grid>
 </Window>
