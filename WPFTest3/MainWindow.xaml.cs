@@ -25,6 +25,9 @@ public partial class MainWindow : Window
 
 
     public TextBox[,] Position = new TextBox[9, 9];
+    public int[][] rows = new int[9][];
+    public int[][] columns = new int[9][];
+    public int[][] blocks = new int[9][];
 
     public MainWindow()
     {
@@ -62,10 +65,24 @@ public partial class MainWindow : Window
 
     private void ButtonSolve_Click(object sender, RoutedEventArgs e)
     {
-        int i = 0;
-        foreach (TextBox cell in Position)
+        for(int i = 0; i < 9; i++)
         {
-            Trace.WriteLine(++i);
+            rows[i] = new int[9];
+            columns[i] = new int[9];
+            blocks[i] = new int[9];
+        }
+        for(int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (Position[i, j].Text != "")
+                {
+                    int num = int.Parse(Position[i, j].Text);
+                    rows[i][num - 1]++;
+                    columns[j][num - 1]++;
+                    blocks[(i / 3) * 3 + j / 3][num - 1]++;
+                }
+            }
         }
     }
 
