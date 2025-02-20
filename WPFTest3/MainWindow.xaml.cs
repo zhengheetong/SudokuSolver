@@ -29,6 +29,12 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        SudokuGridCreation();
+    }
+
+    private void SudokuGridCreation()
+    {
+        Position = new TextBox[9, 9];
         for (int i = 1; i <= 9; i++)
         {
             Brush brush1 = Brushes.LightGreen;
@@ -40,7 +46,7 @@ public partial class MainWindow : Window
             }
             for (int j = 1; j <= 9; j++)
             {
-                Position[i - 1, j - 1] = (TextBox)FindName("Cell" + i + j);
+                SudokuGrid.Children.Add(Position[i - 1, j - 1] = new TextBox());
                 Position[i - 1, j - 1].FontSize = 30;
                 Position[i - 1, j - 1].HorizontalContentAlignment = HorizontalAlignment.Center;
                 Position[i - 1, j - 1].VerticalContentAlignment = VerticalAlignment.Center;
@@ -48,17 +54,18 @@ public partial class MainWindow : Window
                 Position[i - 1, j - 1].PreviewTextInput += Integer; //only allow 1~9
                 Position[i - 1, j - 1].Background = brush1;
                 if (j > 3 && j < 7) Position[i - 1, j - 1].Background = brush2;
-                Grid.SetRow(Position[i - 1, j - 1], i-1);
-                Grid.SetColumn(Position[i - 1, j - 1], j-1);
+                Grid.SetRow(Position[i - 1, j - 1], i - 1);
+                Grid.SetColumn(Position[i - 1, j - 1], j - 1);
             }
         }
     }
 
     private void ButtonSolve_Click(object sender, RoutedEventArgs e)
     {
-        foreach(TextBox cell in Position)
+        int i = 0;
+        foreach (TextBox cell in Position)
         {
-            Trace.WriteLine(cell.Name.ToString());
+            Trace.WriteLine(++i);
         }
     }
 

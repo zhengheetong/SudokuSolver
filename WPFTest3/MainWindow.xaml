@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WPFTest3"
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="400" ResizeMode="NoResize">
-    <Grid Height="400" VerticalAlignment="Top" Margin="10,10,10,10">
+    <Grid Height="400" VerticalAlignment="Top" Margin="10,10,10,10" Name="SudokuGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
@@ -30,87 +30,6 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBox Name="Cell11"/>
-        <TextBox Name="Cell12"/>
-        <TextBox Name="Cell13"/>
-        <TextBox Name="Cell14"/>
-        <TextBox Name="Cell15"/>
-        <TextBox Name="Cell16"/>
-        <TextBox Name="Cell17"/>
-        <TextBox Name="Cell18"/>
-        <TextBox Name="Cell19"/>
-        <TextBox Name="Cell21"/>
-        <TextBox Name="Cell22"/>
-        <TextBox Name="Cell23"/>
-        <TextBox Name="Cell24"/>
-        <TextBox Name="Cell25"/>
-        <TextBox Name="Cell26"/>
-        <TextBox Name="Cell27"/>
-        <TextBox Name="Cell28"/>
-        <TextBox Name="Cell29"/>
-        <TextBox Name="Cell31"/>
-        <TextBox Name="Cell32"/>
-        <TextBox Name="Cell33"/>
-        <TextBox Name="Cell34"/>
-        <TextBox Name="Cell35"/>
-        <TextBox Name="Cell36"/>
-        <TextBox Name="Cell37"/>
-        <TextBox Name="Cell38"/>
-        <TextBox Name="Cell39"/>
-        <TextBox Name="Cell41"/>
-        <TextBox Name="Cell42"/>
-        <TextBox Name="Cell43"/>
-        <TextBox Name="Cell44"/>
-        <TextBox Name="Cell45"/>
-        <TextBox Name="Cell46"/>
-        <TextBox Name="Cell47"/>
-        <TextBox Name="Cell48"/>
-        <TextBox Name="Cell49"/>
-        <TextBox Name="Cell51"/>
-        <TextBox Name="Cell52"/>
-        <TextBox Name="Cell53"/>
-        <TextBox Name="Cell54"/>
-        <TextBox Name="Cell55"/>
-        <TextBox Name="Cell56"/>
-        <TextBox Name="Cell57"/>
-        <TextBox Name="Cell58"/>
-        <TextBox Name="Cell59"/>
-        <TextBox Name="Cell61"/>
-        <TextBox Name="Cell62"/>
-        <TextBox Name="Cell63"/>
-        <TextBox Name="Cell64"/>
-        <TextBox Name="Cell65"/>
-        <TextBox Name="Cell66"/>
-        <TextBox Name="Cell67"/>
-        <TextBox Name="Cell68"/>
-        <TextBox Name="Cell69"/>
-        <TextBox Name="Cell71"/>
-        <TextBox Name="Cell72"/>
-        <TextBox Name="Cell73"/>
-        <TextBox Name="Cell74"/>
-        <TextBox Name="Cell75"/>
-        <TextBox Name="Cell76"/>
-        <TextBox Name="Cell77"/>
-        <TextBox Name="Cell78"/>
-        <TextBox Name="Cell79"/>
-        <TextBox Name="Cell81"/>
-        <TextBox Name="Cell82"/>
-        <TextBox Name="Cell83"/>
-        <TextBox Name="Cell84"/>
-        <TextBox Name="Cell85"/>
-        <TextBox Name="Cell86"/>
-        <TextBox Name="Cell87"/>
-        <TextBox Name="Cell88"/>
-        <TextBox Name="Cell89"/>
-        <TextBox Name="Cell91"/>
-        <TextBox Name="Cell92"/>
-        <TextBox Name="Cell93"/>
-        <TextBox Name="Cell94"/>
-        <TextBox Name="Cell95"/>
-        <TextBox Name="Cell96"/>
-        <TextBox Name="Cell97"/>
-        <TextBox Name="Cell98"/>
-        <TextBox Name="Cell99"/>
         <Button Grid.Row="9" Grid.Column="3" Grid.ColumnSpan="3" Content="Solve" Click="ButtonSolve_Click"/>
     </Grid>
 </Window>
