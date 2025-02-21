@@ -33,6 +33,8 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         SudokuGridCreation();
+        AssignValue();
+        LockValue();
     }
 
     private void SudokuGridCreation()
@@ -63,6 +65,48 @@ public partial class MainWindow : Window
         }
     }
 
+    private void AssignValue()
+    {
+        //temporarily assign value to cells
+        Position[0, 2].Text = "3";
+        Position[1, 2].Text = "2";
+        Position[2, 0].Text = "8";
+        Position[1, 3].Text = "9";
+        Position[2, 4].Text = "6";
+        Position[0, 7].Text = "7";
+        Position[1, 6].Text = "6";
+        Position[3, 0].Text = "3";
+        Position[3, 3].Text = "5";
+        Position[3, 4].Text = "8";
+        Position[3, 5].Text = "2";
+        Position[4, 3].Text = "1";
+        Position[5, 3].Text = "3";
+        Position[5, 4].Text = "9";
+        Position[3, 7].Text = "4";
+        Position[4, 7].Text = "8";
+        Position[5, 8].Text = "1";
+        Position[6, 0].Text = "5";
+        Position[6, 2].Text = "8";
+        Position[7, 2].Text = "9";
+        Position[8, 1].Text = "6";
+        Position[6, 4].Text = "2";
+        Position[7, 4].Text = "1";
+        Position[8, 4].Text = "7";
+        Position[7, 8].Text = "8";
+        Position[8, 7].Text = "2";
+    }
+
+    private void LockValue()
+    {
+        foreach(TextBox tb in Position)
+        {
+            if (tb.Text != "") tb.IsReadOnly = true;
+            else{
+                tb.FontStyle = FontStyles.Italic;
+                tb.Foreground = Brushes.Blue; 
+            }
+        }
+    }
     private void ButtonSolve_Click(object sender, RoutedEventArgs e)
     {
         for(int i = 0; i < 9; i++)
@@ -78,9 +122,11 @@ public partial class MainWindow : Window
                 if (Position[i, j].Text != "")
                 {
                     int num = int.Parse(Position[i, j].Text);
-                    rows[i][num - 1]++;
-                    columns[j][num - 1]++;
-                    blocks[(i / 3) * 3 + j / 3][num - 1]++;
+                    rows[i][j] = num;
+                    columns[j][i] = num;
+                    int block = i / 3 * 3 + j / 3;
+                    int cellinblock = i % 3 * 3 + j % 3;
+                    blocks[block][cellinblock] = num;
                 }
             }
         }
