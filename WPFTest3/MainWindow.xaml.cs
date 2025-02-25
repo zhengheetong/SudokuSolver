@@ -217,6 +217,7 @@ public partial class MainWindow : Window
             }
         }
 
+
         //column solving
         for(int i=0; i<9; i++)
         {
@@ -261,6 +262,52 @@ public partial class MainWindow : Window
 
 
         // box solving
+        for(int i=0; i<9; i++)
+        {
+            Dictionary<int, int> posibilitycheck = new Dictionary<int, int>();
+            foreach (Cell c in Position)
+            {
+                if(c.block == i + 1)
+                {
+                    foreach (string s in c.PossibleValue)
+                    {
+                        if (s.Trim() != "")
+                        {
+                            if (posibilitycheck.ContainsKey(int.Parse(s)))
+                                posibilitycheck[int.Parse(s)]++;
+                            else
+                                posibilitycheck[int.Parse(s)] = 1;
+                        }
+                    }
+                }
+            }
+            foreach (KeyValuePair<int, int> kvp in posibilitycheck)
+            {
+                if (kvp.Value == 1)
+                {
+                    for (int j = 0; j < 9; j++)
+                    {
+                        int row = (i / 3) * 3 + j / 3;
+                        int column = (i % 3) * 3 + j % 3;
+                        if (Position[row, column].PossibleValue.Contains(kvp.Key.ToString()))
+                        {
+                            Position[row, column].textBox.Foreground = Brushes.Blue;
+                            Position[row, column].textBox.FontSize = 30;
+                            Position[row, column].textBox.HorizontalContentAlignment = HorizontalAlignment.Center;
+                            Position[row, column].textBox.VerticalContentAlignment = VerticalAlignment.Center;
+                            Position[row, column].textBox.Text = kvp.Key.ToString();
+                            Position[row, column].value = kvp.Key;
+                            Position[row, column].PossibleValueReset();
+                            RemovePossibility(Position[row, column].row, Position[row, column].column, Position[row, column].block);
+                            //SolvePossibility();
+                            Trace.WriteLine("Block Solve");
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
 
         //remaining solving
         for (int i = 0; i < 9; i++)
@@ -283,6 +330,9 @@ public partial class MainWindow : Window
                 }
             }
         }
+
+
+
 
         Trace.WriteLine("no more obvious answer");
     }
