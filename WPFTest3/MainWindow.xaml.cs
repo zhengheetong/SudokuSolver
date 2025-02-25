@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Data.Common;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -25,6 +26,10 @@ public partial class MainWindow : Window
 
 
     public Cell[,] Position = new Cell[9, 9];
+    public Brush FontColor = Brushes.Blue;
+    public int currentEstimation = 0;
+    public Button[] nums_btn = new Button[9];//temp
+    public bool pElimination = true;
     public int[][] rows = new int[9][];
     public int[][] columns = new int[9][];
     public int[][] blocks = new int[9][];
@@ -65,8 +70,22 @@ public partial class MainWindow : Window
                 Position[i - 1, j - 1].row = i;
                 Position[i - 1, j - 1].column = j;
                 Position[i - 1, j - 1].block = (i <= 3 ? 0 : i <= 6 ? 3 : 6) + (j <= 3 ? 0 : j <= 6 ? 1 : 2) + 1;
-                Position[i - 1, j - 1].cellinblock = i % 3 * 3 + j % 3+1;
             }
+        }
+
+        //temp button
+
+        SudokuGrid.Height = 440;
+        SudokuGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
+        for (int i = 0; i < 9; i++)
+        {
+            nums_btn[i] = new Button();
+            nums_btn[i].Content = i + 1;
+            nums_btn[i].Click += ButtonNums_Click;
+            nums_btn[i].Margin = new Thickness(2, 2, 2, 2);
+            SudokuGrid.Children.Add(nums_btn[i]);
+            Grid.SetRow(nums_btn[i], 11);
+            Grid.SetColumn(nums_btn[i], i);
         }
     }
 
@@ -121,32 +140,31 @@ public partial class MainWindow : Window
             }
         }
     }
+
+    //temporary button to show possible value
+    private void ButtonNums_Click(object sender, RoutedEventArgs e)
+    {
+        Button? btn = sender as Button;
+        
+        var unknown = Position.Cast<Cell>()
+                .Where(p => p.value == 0);
+
+        foreach (var p in unknown)
+        {
+            p.textBox.FontWeight = FontWeights.Normal;
+            p.textBox.Foreground = Brushes.Red;
+            if (p.PossibleValueinRow().Contains(btn.Content.ToString()))
+            {
+                p.textBox.FontWeight = FontWeights.Bold;
+                p.textBox.Foreground = Brushes.Purple;
+            }
+        }
+
+    }
+
     private void ButtonSolve_Click(object sender, RoutedEventArgs e)
     {
-
-        //testing phase
         SolvePossibility();
-        //for(int i = 0; i < 9; i++)
-        //{
-        //    rows[i] = new int[9];
-        //    columns[i] = new int[9];
-        //    blocks[i] = new int[9];
-        //}
-        //for(int i = 0; i < 9; i++)
-        //{
-        //    for (int j = 0; j < 9; j++)
-        //    {
-        //        if (Position[i, j].textBox.Text != "")
-        //        {
-        //            int num = int.Parse(Position[i, j].textBox.Text);
-        //            rows[i][j] = num;
-        //            columns[j][i] = num;
-        //            int block = i / 3 * 3 + j / 3;
-        //            int cellinblock = i % 3 * 3 + j % 3;
-        //            blocks[block][cellinblock] = num;
-        //        }
-        //    }
-        //}
     }
 
     private void GetAllPosibility()
@@ -200,16 +218,14 @@ public partial class MainWindow : Window
                     {
                         if (Position[i, j].PossibleValue.Contains(kvp.Key.ToString()))
                         {
-                            Position[i, j].textBox.Foreground = Brushes.Blue;
-                            Position[i, j].textBox.FontSize = 30;
-                            Position[i, j].textBox.HorizontalContentAlignment = HorizontalAlignment.Center;
-                            Position[i, j].textBox.VerticalContentAlignment = VerticalAlignment.Center;
+                            TBFixed(i, j);
                             Position[i, j].textBox.Text = kvp.Key.ToString();
                             Position[i, j].value = kvp.Key;
                             Position[i, j].PossibleValueReset();
-                            RemovePossibility(Position[i, j].row, Position[i, j].column, Position[i, j].block);
+                            RemovePossibility(Position[i, j].row, Position[i, j].column, Position[i, j].block, Position[i, j].value);
                             //SolvePossibility();
                             Trace.WriteLine("Row Solve");
+                            pElimination = true;
                             return;
                         }
                     }
@@ -243,16 +259,14 @@ public partial class MainWindow : Window
                     {
                         if (Position[j, i].PossibleValue.Contains(kvp.Key.ToString()))
                         {
-                            Position[j, i].textBox.Foreground = Brushes.Blue;
-                            Position[j, i].textBox.FontSize = 30;
-                            Position[j, i].textBox.HorizontalContentAlignment = HorizontalAlignment.Center;
-                            Position[j, i].textBox.VerticalContentAlignment = VerticalAlignment.Center;
+                            TBFixed(j, i);
                             Position[j, i].textBox.Text = kvp.Key.ToString();
                             Position[j, i].value = kvp.Key;
                             Position[j, i].PossibleValueReset();
-                            RemovePossibility(Position[j, i].row, Position[j, i].column, Position[j, i].block);
+                            RemovePossibility(Position[j, i].row, Position[j, i].column, Position[j, i].block, Position[j, i].value);
                             //SolvePossibility();
                             Trace.WriteLine("Column Solve");
+                            pElimination = true;
                             return;
                         }
                     }
@@ -291,16 +305,14 @@ public partial class MainWindow : Window
                         int column = (i % 3) * 3 + j % 3;
                         if (Position[row, column].PossibleValue.Contains(kvp.Key.ToString()))
                         {
-                            Position[row, column].textBox.Foreground = Brushes.Blue;
-                            Position[row, column].textBox.FontSize = 30;
-                            Position[row, column].textBox.HorizontalContentAlignment = HorizontalAlignment.Center;
-                            Position[row, column].textBox.VerticalContentAlignment = VerticalAlignment.Center;
+                            TBFixed(row, column);
                             Position[row, column].textBox.Text = kvp.Key.ToString();
                             Position[row, column].value = kvp.Key;
                             Position[row, column].PossibleValueReset();
-                            RemovePossibility(Position[row, column].row, Position[row, column].column, Position[row, column].block);
+                            RemovePossibility(Position[row, column].row, Position[row, column].column, Position[row, column].block, Position[row, column].value);
                             //SolvePossibility();
                             Trace.WriteLine("Block Solve");
+                            pElimination = true;
                             return;
                         }
                     }
@@ -316,43 +328,264 @@ public partial class MainWindow : Window
             {
                 if (Position[i, j].PossibleValueinRow().Trim().Length == 1)
                 {
-                    Position[i, j].textBox.Foreground = Brushes.Blue;
-                    Position[i, j].textBox.FontSize = 30;
-                    Position[i, j].textBox.HorizontalContentAlignment = HorizontalAlignment.Center;
-                    Position[i, j].textBox.VerticalContentAlignment = VerticalAlignment.Center;
+                    TBFixed(i, j);
                     Position[i, j].textBox.Text = Position[i, j].PossibleValueinRow().Trim();
                     Position[i, j].value = int.Parse(Position[i, j].textBox.Text);
                     Position[i, j].PossibleValueReset();
-                    RemovePossibility(Position[i, j].row, Position[i, j].column, Position[i, j].block);
+                    RemovePossibility(Position[i, j].row, Position[i, j].column, Position[i, j].block, Position[i, j].value);
                     //SolvePossibility();
                     Trace.WriteLine("One Possibility Only Solve");
+                    pElimination = true;
                     return;
                 }
             }
         }
 
+        if (pElimination)
+        {
+            PossibilityElimination1();
+            PossibilityElimination2();
+            Trace.WriteLine("Possibility Eliminate");
+            pElimination = false;
+            return;
+        }
 
 
+        EstimationSolving(0);
 
         Trace.WriteLine("no more obvious answer");
     }
 
-    private void RemovePossibility(int row, int column, int block)
+    private void PossibilityElimination1() //identify cell with same obvious pair under same row, column, or block
     {
-        for (int i = 0; i < 9; i++)
+        var unknown = Position.Cast<Cell>().Where(p => p.value == 0);
+
+        foreach (var p1 in unknown)
         {
-            for(int j = 0;j < 9; j++)
+            foreach (var p2 in unknown)
             {
-                if (Position[i, j].row == row || Position[i, j].column == column || Position[i, j].block == block)
+                string[] pair = new string[2];
+                int t_row = 0, t_column = 0, t_block = 0;
+
+                if (p1.row == p2.row && p1.column == p2.column) continue; // skip if same cell
+
+                if (p1.PossibleValueWithoutEmpty() == p2.PossibleValueWithoutEmpty() && p1.PossibleValueWithoutEmpty().Length == 2)
                 {
-                    Position[i, j].PossibleValue[Position[row - 1, column - 1].value - 1] = "  ";
-                    if (Position[i,j].value==0)
-                        Position[i, j].textBox.Text = Position[i, j].PossibleValueinRow();
+                    if (p1.row == p2.row) t_row = p1.row; // check if same row
+                    else if (p1.column == p2.column) t_column = p1.column; // check if same column
+                    if(p1.block == p2.block) t_block = p1.block;// check if same block
+                }
+
+                if(t_row == 0 && t_column == 0 && t_block == 0) continue; // skip if not in same row, column, or block
+
+                pair[0] = "" + p1.PossibleValueWithoutEmpty()[0];
+                pair[1] = "" + p1.PossibleValueWithoutEmpty()[1];
+
+                RemovePossibility(t_row, t_column, t_block, int.Parse(pair[0]));
+                RemovePossibility(t_row, t_column, t_block, int.Parse(pair[1]));
+
+                foreach (string s in pair)
+                {
+                    p1.PossibleValue[int.Parse(s) - 1] = s;
+                    p2.PossibleValue[int.Parse(s) - 1] = s;
+                }
+
+                p1.textBox.Text = p1.PossibleValueinRow();
+                p2.textBox.Text = p2.PossibleValueinRow();
+
+            }
+        }
+    }
+
+    private void PossibilityElimination2() //identify cell with same less obvious pair under same row, column, or bloc
+    {
+        var unknown = Position.Cast<Cell>().Where(p => p.value == 0);
+        for (int row = 0; row < 9; row++)
+        {
+            Dictionary<int, int> keyValuePairs = new Dictionary<int, int>();
+            List<int> pair = new List<int>();
+            foreach (var p in unknown)
+            {
+                if (p.row == row)
+                {
+                    foreach (string s in p.PossibleValue)
+                    {
+                        if (s.Trim() != "")
+                        {
+                            if (keyValuePairs.ContainsKey(int.Parse(s)))
+                                keyValuePairs[int.Parse(s)]++;
+                            else
+                                keyValuePairs[int.Parse(s)] = 1;
+                        }
+                    }
+                }
+            }
+            foreach (KeyValuePair<int, int> kvp in keyValuePairs)
+            {
+                if (kvp.Value == 2)
+                {
+                    pair.Add(kvp.Key);
+                }
+            }
+            for (int i = 0; i < pair.Count; i++)
+            {
+                for(int j = i + 1; j < pair.Count; j++)
+                {
+                    var exist = unknown
+                        .Where(u=> u.row ==row)
+                        .Where(u=> u.PossibleValue.Contains(pair[i].ToString()))
+                        .Where(u => u.PossibleValue.Contains(pair[j].ToString()));
+                    if (exist.Count() == 2)
+                    {
+                        int t_block = 0;
+                        if(exist.First().block == exist.Last().block)
+                        {
+                            t_block = exist.First().block;
+                        }
+                        int row1 = exist.First().row;
+                        int row2 = exist.Last().row;
+                        int col1 = exist.First().column;
+                        int col2 = exist.Last().column;
+
+                        RemovePossibility(row, 0, t_block, pair[i]);
+                        RemovePossibility(row, 0, t_block, pair[j]);
+
+                        Position[row1 - 1, col1 - 1].PossibleValue[pair[i] - 1] = pair[i].ToString();
+                        Position[row1 - 1, col1 - 1].PossibleValue[pair[j] - 1] = pair[j].ToString();
+                        Position[row2 - 1, col2 - 1].PossibleValue[pair[i] - 1] = pair[i].ToString();
+                        Position[row2 - 1, col2 - 1].PossibleValue[pair[j] - 1] = pair[j].ToString();
+
+                        Position[row1 - 1, col1 - 1].textBox.Text = Position[row1 - 1, col1 - 1].PossibleValueinRow();
+                        Position[row2 - 1, col2 - 1].textBox.Text = Position[row2 - 1, col2 - 1].PossibleValueinRow();
+
+                        string after = Position[row1 - 1, col1 - 1].PossibleValueWithoutEmpty() + " " + Position[row2 - 1, col2 - 1].PossibleValueWithoutEmpty();
+
+                    }
+                }
+            }
+        }
+
+        for (int col = 0; col < 9; col++)
+        {
+            Dictionary<int, int> keyValuePairs = new Dictionary<int, int>();
+            List<int> pair = new List<int>();
+            foreach (var p in unknown)
+            {
+                if (p.column == col)
+                {
+                    foreach (string s in p.PossibleValue)
+                    {
+                        if (s.Trim() != "")
+                        {
+                            if (keyValuePairs.ContainsKey(int.Parse(s)))
+                                keyValuePairs[int.Parse(s)]++;
+                            else
+                                keyValuePairs[int.Parse(s)] = 1;
+                        }
+                    }
+                }
+            }
+            foreach (KeyValuePair<int, int> kvp in keyValuePairs)
+            {
+                if (kvp.Value == 2)
+                {
+                    pair.Add(kvp.Key);
+                }
+            }
+            for (int i = 0; i < pair.Count; i++)
+            {
+                for (int j = i + 1; j < pair.Count; j++)
+                {
+                    var exist = unknown
+                        .Where(u => u.column == col)
+                        .Where(u => u.PossibleValue.Contains(pair[i].ToString()))
+                        .Where(u => u.PossibleValue.Contains(pair[j].ToString()));
+                    if (exist.Count() == 2)
+                    {
+                        int t_block = 0;
+                        if (exist.First().block == exist.Last().block)
+                        {
+                            t_block = exist.First().block;
+                        }
+                        int row1 = exist.First().row;
+                        int row2 = exist.Last().row;
+                        int col1 = exist.First().column;
+                        int col2 = exist.Last().column;
+
+                        RemovePossibility(0, col, t_block, pair[i]);
+                        RemovePossibility(0, col, t_block, pair[j]);
+
+                        Position[row1 - 1, col1 - 1].PossibleValue[pair[i] - 1] = pair[i].ToString();
+                        Position[row1 - 1, col1 - 1].PossibleValue[pair[j] - 1] = pair[j].ToString();
+                        Position[row2 - 1, col2 - 1].PossibleValue[pair[i] - 1] = pair[i].ToString();
+                        Position[row2 - 1, col2 - 1].PossibleValue[pair[j] - 1] = pair[j].ToString();
+
+                        Position[row1 - 1, col1 - 1].textBox.Text = Position[row1 - 1, col1 - 1].PossibleValueinRow();
+                        Position[row2 - 1, col2 - 1].textBox.Text = Position[row2 - 1, col2 - 1].PossibleValueinRow();
+
+                    }
                 }
             }
         }
     }
 
+    private void RemovePossibility(int row, int column, int block, int value)
+    {
+        var unknown = Position.Cast<Cell>()
+                .Where(p => p.value == 0);
+
+        foreach(var p in unknown)
+        {
+            if (p.row == row || p.column == column || p.block == block)
+            {
+                p.PossibleValue[value - 1] = "  ";
+                if (p.value == 0)
+                    p.textBox.Text = p.PossibleValueinRow();
+            }
+        }
+    }
+
+    private void EstimationSolving(int n)
+    {
+        FontColor = Brushes.Purple;
+        var unknown = Position.Cast<Cell>().Where(p => p.value == 0);
+        foreach(var p in unknown)
+        {
+            p.temp_solving++;
+        }
+        currentEstimation++;
+        Trace.WriteLine("Estimation Solving on");
+        var Shortest = unknown
+            .Where(p => p.PossibleValueWithoutEmpty().Length == 2);
+        if(Shortest.Count() == 0)
+        {
+            var reset = Position.Cast<Cell>().Where(p => p.temp_solving == currentEstimation-1);
+            foreach (var r in reset)
+            {
+                r.value = 0;
+                r.textBox.Text = "";
+                r.temp_solving--;
+                GetAllPosibility();
+            }
+            currentEstimation--;
+            EstimationSolving(n + 1);
+        }
+        var firstShortest = Shortest.First();
+        firstShortest.value = int.Parse(firstShortest.PossibleValueWithoutEmpty()[n].ToString());
+        firstShortest.textBox.Text = firstShortest.value.ToString();
+        TBFixed(firstShortest.row - 1, firstShortest.column - 1);
+        firstShortest.PossibleValueReset();
+        RemovePossibility(firstShortest.row, firstShortest.column, firstShortest.block, firstShortest.value);
+    }
+
+    private void TBFixed(int row, int col)
+    {
+
+        Position[row, col].textBox.Foreground = FontColor;
+        Position[row, col].textBox.FontSize = 30;
+        Position[row, col].textBox.HorizontalContentAlignment = HorizontalAlignment.Center;
+        Position[row, col].textBox.VerticalContentAlignment = VerticalAlignment.Center;
+    }
 
     private void SudokuSolving()
     {

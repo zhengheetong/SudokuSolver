@@ -11,10 +11,10 @@ namespace WPFTest3
     {
         public TextBox textBox { get; set; } = new TextBox();
         public int value { get; set; }
+        public int temp_solving { get; set; } = 0;
         public int row { get; set; }
         public int column { get; set; }
         public int block { get; set; }
-        public int cellinblock { get; set; }
         public string[] PossibleValue { get; set; } = new string[9] {"  ", "  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "};
 
         public string PossibleValueinRow()
@@ -24,6 +24,26 @@ namespace WPFTest3
                 $"{this.PossibleValue[3]} {this.PossibleValue[4]} {this.PossibleValue[5]}\n" +
                 $"{this.PossibleValue[6]} {this.PossibleValue[7]} {this.PossibleValue[8]}";
 
+        }
+
+        public string PossibleValueWithoutEmpty()
+        {
+            string result = "";
+            for (int i = 0; i < 9; i++)
+            {
+                if (this.PossibleValue[i] != "  ")
+                {
+                    result += "" + this.PossibleValue[i];
+                }
+            }
+            return result;
+        }
+
+        public bool PossibleValueLeft()
+        {
+            foreach(string s in PossibleValue)
+                if (Int32.TryParse(s, out int result)) return true;
+            return false;
         }
 
         public void PossibleValueReset()
