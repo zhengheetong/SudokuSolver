@@ -30,6 +30,8 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Button Grid.Row="9" Grid.Column="3" Grid.ColumnSpan="3" Content="Solve" Click="ButtonSolve_Click"/>
+        <Button Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3" Content="Reset" Click="ButtonReset_Click" Margin="2,2,2,2"/>
+        <Button Grid.Row="9" Grid.Column="3" Grid.ColumnSpan="3" Content="Solve" Click="ButtonSolve_Click" Margin="2,2,2,2"/>
+        <Button Grid.Row="9" Grid.Column="6" Grid.ColumnSpan="3" Content="Lock" Click="ButtonLock_Click" Margin="2,2,2,2"/>
     </Grid>
 </Window>

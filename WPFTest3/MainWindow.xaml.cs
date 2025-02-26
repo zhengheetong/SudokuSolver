@@ -38,8 +38,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         SudokuGridCreation();
-        AssignValue();
-        LockValue();
     }
 
     private void SudokuGridCreation()
@@ -72,52 +70,37 @@ public partial class MainWindow : Window
                 Position[i - 1, j - 1].block = (i <= 3 ? 0 : i <= 6 ? 3 : 6) + (j <= 3 ? 0 : j <= 6 ? 1 : 2) + 1;
             }
         }
-
-        //temp button
-
-        SudokuGrid.Height = 440;
-        SudokuGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(40) });
-        for (int i = 0; i < 9; i++)
-        {
-            nums_btn[i] = new Button();
-            nums_btn[i].Content = i + 1;
-            nums_btn[i].Click += ButtonNums_Click;
-            nums_btn[i].Margin = new Thickness(2, 2, 2, 2);
-            SudokuGrid.Children.Add(nums_btn[i]);
-            Grid.SetRow(nums_btn[i], 11);
-            Grid.SetColumn(nums_btn[i], i);
-        }
     }
 
     private void AssignValue()
     {
         //temporarily assign value to cells
-        Position[0, 2].textBox.Text = "3";
-        Position[1, 2].textBox.Text = "2";
-        Position[2, 0].textBox.Text = "8";
-        Position[1, 3].textBox.Text = "9";
-        Position[2, 4].textBox.Text = "6";
-        Position[0, 7].textBox.Text = "7";
-        Position[1, 6].textBox.Text = "6";
-        Position[3, 0].textBox.Text = "3";
-        Position[3, 3].textBox.Text = "5";
-        Position[3, 4].textBox.Text = "8";
-        Position[3, 5].textBox.Text = "2";
-        Position[4, 3].textBox.Text = "1";
-        Position[5, 3].textBox.Text = "3";
-        Position[5, 4].textBox.Text = "9";
-        Position[3, 7].textBox.Text = "4";
-        Position[4, 7].textBox.Text = "8";
-        Position[5, 8].textBox.Text = "1";
-        Position[6, 0].textBox.Text = "5";
-        Position[6, 2].textBox.Text = "8";
-        Position[7, 2].textBox.Text = "9";
-        Position[8, 1].textBox.Text = "6";
-        Position[6, 4].textBox.Text = "2";
-        Position[7, 4].textBox.Text = "1";
-        Position[8, 4].textBox.Text = "7";
-        Position[7, 8].textBox.Text = "8";
-        Position[8, 7].textBox.Text = "2";
+        //Position[0, 2].textBox.Text = "3";
+        //Position[1, 2].textBox.Text = "2";
+        //Position[2, 0].textBox.Text = "8";
+        //Position[1, 3].textBox.Text = "9";
+        //Position[2, 4].textBox.Text = "6";
+        //Position[0, 7].textBox.Text = "7";
+        //Position[1, 6].textBox.Text = "6";
+        //Position[3, 0].textBox.Text = "3";
+        //Position[3, 3].textBox.Text = "5";
+        //Position[3, 4].textBox.Text = "8";
+        //Position[3, 5].textBox.Text = "2";
+        //Position[4, 3].textBox.Text = "1";
+        //Position[5, 3].textBox.Text = "3";
+        //Position[5, 4].textBox.Text = "9";
+        //Position[3, 7].textBox.Text = "4";
+        //Position[4, 7].textBox.Text = "8";
+        //Position[5, 8].textBox.Text = "1";
+        //Position[6, 0].textBox.Text = "5";
+        //Position[6, 2].textBox.Text = "8";
+        //Position[7, 2].textBox.Text = "9";
+        //Position[8, 1].textBox.Text = "6";
+        //Position[6, 4].textBox.Text = "2";
+        //Position[7, 4].textBox.Text = "1";
+        //Position[8, 4].textBox.Text = "7";
+        //Position[7, 8].textBox.Text = "8";
+        //Position[8, 7].textBox.Text = "2";
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)
@@ -133,8 +116,8 @@ public partial class MainWindow : Window
     {
         foreach(Cell tb in Position)
         {
-            if (tb.textBox.Text != "") tb.textBox.IsReadOnly = true;
-            else{
+            tb.textBox.IsReadOnly = true;
+            if (tb.textBox.Text == ""){
                 tb.textBox.FontStyle = FontStyles.Italic;
                 tb.textBox.Foreground = Brushes.Blue; 
             }
@@ -164,6 +147,13 @@ public partial class MainWindow : Window
 
     private void ButtonSolve_Click(object sender, RoutedEventArgs e)
     {
+        var solved = Position.Cast<Cell>().Where(p => p.value == 0);
+
+        if (solved.Count() == 0)
+        {
+            MessageBox.Show("Sudoku already solved");
+            return;
+        }
         SolvePossibility();
     }
 
@@ -224,7 +214,6 @@ public partial class MainWindow : Window
                             Position[i, j].PossibleValueReset();
                             RemovePossibility(Position[i, j].row, Position[i, j].column, Position[i, j].block, Position[i, j].value);
                             //SolvePossibility();
-                            Trace.WriteLine("Row Solve");
                             pElimination = true;
                             return;
                         }
@@ -265,7 +254,6 @@ public partial class MainWindow : Window
                             Position[j, i].PossibleValueReset();
                             RemovePossibility(Position[j, i].row, Position[j, i].column, Position[j, i].block, Position[j, i].value);
                             //SolvePossibility();
-                            Trace.WriteLine("Column Solve");
                             pElimination = true;
                             return;
                         }
@@ -311,7 +299,6 @@ public partial class MainWindow : Window
                             Position[row, column].PossibleValueReset();
                             RemovePossibility(Position[row, column].row, Position[row, column].column, Position[row, column].block, Position[row, column].value);
                             //SolvePossibility();
-                            Trace.WriteLine("Block Solve");
                             pElimination = true;
                             return;
                         }
@@ -334,7 +321,6 @@ public partial class MainWindow : Window
                     Position[i, j].PossibleValueReset();
                     RemovePossibility(Position[i, j].row, Position[i, j].column, Position[i, j].block, Position[i, j].value);
                     //SolvePossibility();
-                    Trace.WriteLine("One Possibility Only Solve");
                     pElimination = true;
                     return;
                 }
@@ -345,15 +331,11 @@ public partial class MainWindow : Window
         {
             PossibilityElimination1();
             PossibilityElimination2();
-            Trace.WriteLine("Possibility Eliminate");
             pElimination = false;
             return;
         }
 
-
         EstimationSolving(0);
-
-        Trace.WriteLine("no more obvious answer");
     }
 
     private void PossibilityElimination1() //identify cell with same obvious pair under same row, column, or block
@@ -554,7 +536,6 @@ public partial class MainWindow : Window
             p.temp_solving++;
         }
         currentEstimation++;
-        Trace.WriteLine("Estimation Solving on");
         var Shortest = unknown
             .Where(p => p.PossibleValueWithoutEmpty().Length == 2);
         if(Shortest.Count() == 0)
@@ -587,8 +568,28 @@ public partial class MainWindow : Window
         Position[row, col].textBox.VerticalContentAlignment = VerticalAlignment.Center;
     }
 
-    private void SudokuSolving()
-    {
 
+    private void ButtonReset_Click(object sender, RoutedEventArgs e)
+    {
+        foreach (Cell tb in Position)
+        {
+            tb.textBox.Text = "";
+            tb.textBox.IsReadOnly = false;
+            tb.textBox.FontStyle = FontStyles.Normal;
+            tb.textBox.Foreground = Brushes.Black;
+            tb.textBox.FontSize = 30;
+            tb.textBox.HorizontalContentAlignment = HorizontalAlignment.Center;
+            tb.textBox.VerticalContentAlignment = VerticalAlignment.Center;
+            tb.textBox.IsReadOnly = false;
+            tb.value = 0;
+            tb.temp_solving = 0;
+            tb.PossibleValueReset();
+        }
+    }
+
+    private void ButtonLock_Click(object sender, RoutedEventArgs e)
+    {
+        AssignValue();
+        LockValue();
     }
 }
