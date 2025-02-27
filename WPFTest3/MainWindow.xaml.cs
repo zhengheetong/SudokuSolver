@@ -100,12 +100,22 @@ public partial class MainWindow : Window
         }
     }
 
+    private void ButtonFastSolve_Click(object sender, RoutedEventArgs e)
+    {
+        if (btn_Lock.IsEnabled == true) ButtonLock_Click(sender, e);
+
+        while (true)
+        {
+            var solved = Position.Cast<Cell>().Where(p => p.value == 0);
+            if (solved.Count() == 0) break;
+            else SolvePossibility();
+        }
+
+    }
+
     private void ButtonSolve_Click(object sender, RoutedEventArgs e)
     {
-        if(btn_Lock.IsEnabled == true)
-        {
-            ButtonLock_Click(sender, e);
-        }
+        if(btn_Lock.IsEnabled == true) ButtonLock_Click(sender, e);
 
         var solved = Position.Cast<Cell>().Where(p => p.value == 0);
 
@@ -147,7 +157,6 @@ public partial class MainWindow : Window
     private void SolvePossibility()
     {
         var checkEmpty = Position.Cast<Cell>().Where(p => p.value == 0).Where(p => p.PossibleValueWithoutEmpty().Length == 0);
-        Trace.WriteLine(checkEmpty.Count());
         //if exist cell with no possible value, then the estimation is wrong
         if (checkEmpty.Count() > 0)
         {
@@ -313,7 +322,6 @@ public partial class MainWindow : Window
         }
 
         currentEstimation.Add(currentEstimation.Count, 0);
-        Trace.WriteLine("Estimation Start: Level " + currentEstimation.Last().Key);
         EstimationSolving(currentEstimation.Last().Key);
     }
 
@@ -595,7 +603,6 @@ public partial class MainWindow : Window
         blocks = new int[9][];
         SudokuGridCreation();
         btn_Lock.IsEnabled = true;
-
     }
 
     private void ButtonLock_Click(object sender, RoutedEventArgs e)

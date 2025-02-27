@@ -6,8 +6,9 @@
         xmlns:local="clr-namespace:WPFTest3"
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="400" ResizeMode="NoResize">
-    <Grid Height="400" VerticalAlignment="Top" Margin="10,10,10,10" Name="SudokuGrid">
+    <Grid Height="440" VerticalAlignment="Top" Margin="10,10,10,10" Name="SudokuGrid">
         <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
@@ -33,5 +34,6 @@
         <Button Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3" Content="Reset" Click="ButtonReset_Click" Margin="2,2,2,2"/>
         <Button Grid.Row="9" Grid.Column="3" Grid.ColumnSpan="3" Content="Solve" Click="ButtonSolve_Click" Margin="2,2,2,2"/>
         <Button Grid.Row="9" Grid.Column="6" Grid.ColumnSpan="3" Content="Lock" Click="ButtonLock_Click" Margin="2,2,2,2" Name="btn_Lock"/>
+        <Button Grid.Row="10" Grid.Column="3" Grid.ColumnSpan="3" Content="Fast Solve" Click="ButtonFastSolve_Click" Margin="2,2,2,2"/>
     </Grid>
 </Window>

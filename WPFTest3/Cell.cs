@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace WPFTest3
         public int column { get; set; }
         public int block { get; set; }
         public string[] PossibleValue { get; set; } = new string[9] {"  ", "  ", "  ", "  ", "  ", "  ", "  ", "  ", "  "};
+
 
         public string PossibleValueinRow()
         {
