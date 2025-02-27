@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -100,7 +101,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void ButtonFastSolve_Click(object sender, RoutedEventArgs e)
+    private async void ButtonFastSolve_Click(object sender, RoutedEventArgs e)
     {
         if (btn_Lock.IsEnabled == true) ButtonLock_Click(sender, e);
 
@@ -109,9 +110,10 @@ public partial class MainWindow : Window
             var solved = Position.Cast<Cell>().Where(p => p.value == 0);
             if (solved.Count() == 0) break;
             else SolvePossibility();
+            await Task.Delay(100);
         }
-
     }
+
 
     private void ButtonSolve_Click(object sender, RoutedEventArgs e)
     {
