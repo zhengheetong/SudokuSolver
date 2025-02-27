@@ -27,8 +27,7 @@ public partial class MainWindow : Window
 
     public Cell[,] Position = new Cell[9, 9];
     public Brush FontColor = Brushes.Blue;
-    public int currentEstimation = 0;
-    public Button[] nums_btn = new Button[9];//temp
+    public Dictionary<int, int> currentEstimation = new Dictionary<int, int>(); 
     public bool pElimination = true;
     public int[][] rows = new int[9][];
     public int[][] columns = new int[9][];
@@ -38,7 +37,10 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         SudokuGridCreation();
+        currentEstimation.Add(0, 0);
     }
+
+    #region
 
     private void SudokuGridCreation()
     {
@@ -62,6 +64,7 @@ public partial class MainWindow : Window
                 Position[i - 1, j - 1].textBox.PreviewTextInput += Integer; //only allow 1~9
                 Position[i - 1, j - 1].textBox.Background = brush1;
                 if (j > 3 && j < 7) Position[i - 1, j - 1].textBox.Background = brush2;
+                SudokuGrid.Children.Remove(Position[i - 1, j - 1].textBox);
                 SudokuGrid.Children.Add(Position[i - 1, j - 1].textBox);
                 Grid.SetRow(Position[i - 1, j - 1].textBox, i - 1);
                 Grid.SetColumn(Position[i - 1, j - 1].textBox, j - 1);
@@ -74,38 +77,11 @@ public partial class MainWindow : Window
 
     private void AssignValue()
     {
-        //temporarily assign value to cells
-        //Position[0, 2].textBox.Text = "3";
-        //Position[1, 2].textBox.Text = "2";
-        //Position[2, 0].textBox.Text = "8";
-        //Position[1, 3].textBox.Text = "9";
-        //Position[2, 4].textBox.Text = "6";
-        //Position[0, 7].textBox.Text = "7";
-        //Position[1, 6].textBox.Text = "6";
-        //Position[3, 0].textBox.Text = "3";
-        //Position[3, 3].textBox.Text = "5";
-        //Position[3, 4].textBox.Text = "8";
-        //Position[3, 5].textBox.Text = "2";
-        //Position[4, 3].textBox.Text = "1";
-        //Position[5, 3].textBox.Text = "3";
-        //Position[5, 4].textBox.Text = "9";
-        //Position[3, 7].textBox.Text = "4";
-        //Position[4, 7].textBox.Text = "8";
-        //Position[5, 8].textBox.Text = "1";
-        //Position[6, 0].textBox.Text = "5";
-        //Position[6, 2].textBox.Text = "8";
-        //Position[7, 2].textBox.Text = "9";
-        //Position[8, 1].textBox.Text = "6";
-        //Position[6, 4].textBox.Text = "2";
-        //Position[7, 4].textBox.Text = "1";
-        //Position[8, 4].textBox.Text = "7";
-        //Position[7, 8].textBox.Text = "8";
-        //Position[8, 7].textBox.Text = "2";
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)
             {
-                Position[i, j].value = Position[i, j].textBox.Text == "" ? 0 : int.Parse(Position[i, j].textBox.Text);
+                Position[i, j].value = Position[i, j].textBox.Text.Length != 1 ? 0 : int.Parse(Position[i, j].textBox.Text);
             }
         }
 
@@ -124,29 +100,13 @@ public partial class MainWindow : Window
         }
     }
 
-    //temporary button to show possible value
-    private void ButtonNums_Click(object sender, RoutedEventArgs e)
-    {
-        Button? btn = sender as Button;
-        
-        var unknown = Position.Cast<Cell>()
-                .Where(p => p.value == 0);
-
-        foreach (var p in unknown)
-        {
-            p.textBox.FontWeight = FontWeights.Normal;
-            p.textBox.Foreground = Brushes.Red;
-            if (p.PossibleValueinRow().Contains(btn.Content.ToString()))
-            {
-                p.textBox.FontWeight = FontWeights.Bold;
-                p.textBox.Foreground = Brushes.Purple;
-            }
-        }
-
-    }
-
     private void ButtonSolve_Click(object sender, RoutedEventArgs e)
     {
+        if(btn_Lock.IsEnabled == true)
+        {
+            ButtonLock_Click(sender, e);
+        }
+
         var solved = Position.Cast<Cell>().Where(p => p.value == 0);
 
         if (solved.Count() == 0)
@@ -154,6 +114,7 @@ public partial class MainWindow : Window
             MessageBox.Show("Sudoku already solved");
             return;
         }
+
         SolvePossibility();
     }
 
@@ -181,10 +142,24 @@ public partial class MainWindow : Window
         }
     }
 
+    #endregion
+
     private void SolvePossibility()
     {
+        var checkEmpty = Position.Cast<Cell>().Where(p => p.value == 0).Where(p => p.PossibleValueWithoutEmpty().Length == 0);
+        Trace.WriteLine(checkEmpty.Count());
+        //if exist cell with no possible value, then the estimation is wrong
+        if (checkEmpty.Count() > 0)
+        {
+            ClearEstimation(currentEstimation.Last().Key);//cell with estimation level of the current key will be reset
+            currentEstimation[currentEstimation.Last().Key]++;//increase the value of the current key for the second possible value
+            EstimationSolving(currentEstimation.Last().Key);//call the estimation solving again
+            return;
+        }
+
+        #region solving algorithm
         //row solving
-        for(int i = 0; i <9 ;i++)
+        for (int i = 0; i <9 ;i++)
         {
             Dictionary<int,int> posibilitycheck = new Dictionary<int,int>();
             for(int j = 0; j < 9; j++)
@@ -327,6 +302,8 @@ public partial class MainWindow : Window
             }
         }
 
+        #endregion 
+
         if (pElimination)
         {
             PossibilityElimination1();
@@ -335,8 +312,12 @@ public partial class MainWindow : Window
             return;
         }
 
-        EstimationSolving(0);
+        currentEstimation.Add(currentEstimation.Count, 0);
+        Trace.WriteLine("Estimation Start: Level " + currentEstimation.Last().Key);
+        EstimationSolving(currentEstimation.Last().Key);
     }
+
+    #region
 
     private void PossibilityElimination1() //identify cell with same obvious pair under same row, column, or block
     {
@@ -527,36 +508,70 @@ public partial class MainWindow : Window
         }
     }
 
-    private void EstimationSolving(int n)
+    #endregion
+
+    private void ClearEstimation(int key)
     {
+        //update the estimation solving level that is larger that key
+        var reset = Position.Cast<Cell>().Where(p => p.temp_solving >= key);
+        foreach (var r in reset)
+        {
+            r.value = 0;
+            r.textBox.Text = "";
+            r.temp_solving = key;
+            r.PossibleValueReset();
+        }
+        GetAllPosibility();//after reset, update the possible value again for the empty
+    }
+
+    private void EstimationSolving(int key)
+    {
+        //rethink logic here
         FontColor = Brushes.Purple;
-        var unknown = Position.Cast<Cell>().Where(p => p.value == 0);
-        foreach(var p in unknown)
+
+        if (currentEstimation[key] > 1)
         {
-            p.temp_solving++;
+            currentEstimation.Remove(key);
+            key--;
+            currentEstimation[key]++;
+            ClearEstimation(key);
+            EstimationSolving(key);
+            return;
+        }   
+
+        var unknown = Position.Cast<Cell>()
+            .Where(p => p.value == 0);//filter out cell without answer yet
+
+        //update all the empty cell with new key for estimation level
+        foreach (var p in unknown)
+        {
+            p.temp_solving = key;
         }
-        currentEstimation++;
+
+
         var Shortest = unknown
-            .Where(p => p.PossibleValueWithoutEmpty().Length == 2);
-        if(Shortest.Count() == 0)
+            .Where(p => p.PossibleValueWithoutEmpty().Length == 2);//filter out cell with the least possible value
+
+        if (Shortest.Count() == 0)
         {
-            var reset = Position.Cast<Cell>().Where(p => p.temp_solving == currentEstimation-1);
-            foreach (var r in reset)
-            {
-                r.value = 0;
-                r.textBox.Text = "";
-                r.temp_solving--;
-                GetAllPosibility();
-            }
-            currentEstimation--;
-            EstimationSolving(n + 1);
+            currentEstimation.Remove(key);
+            key--;
+            currentEstimation[key]++;
+            ClearEstimation(key);
+            EstimationSolving(key);
+            return;
+           
         }
-        var firstShortest = Shortest.First();
-        firstShortest.value = int.Parse(firstShortest.PossibleValueWithoutEmpty()[n].ToString());
-        firstShortest.textBox.Text = firstShortest.value.ToString();
-        TBFixed(firstShortest.row - 1, firstShortest.column - 1);
-        firstShortest.PossibleValueReset();
-        RemovePossibility(firstShortest.row, firstShortest.column, firstShortest.block, firstShortest.value);
+
+        var firstShortest = Shortest.First();//choose the first cell with least possible value
+
+        
+
+        firstShortest.value = int.Parse(firstShortest.PossibleValueWithoutEmpty()[currentEstimation.Last().Value].ToString());//Choose the first possible value, then second if the first one is wrong
+        firstShortest.textBox.Text = firstShortest.value.ToString();//Update the text box with the value
+        TBFixed(firstShortest.row - 1, firstShortest.column - 1);//Update the format of the textbox
+        firstShortest.PossibleValueReset();//reset the possible value
+        RemovePossibility(firstShortest.row, firstShortest.column, firstShortest.block, firstShortest.value);//remove the possibility from the same row, column and block
     }
 
     private void TBFixed(int row, int col)
@@ -568,27 +583,24 @@ public partial class MainWindow : Window
         Position[row, col].textBox.VerticalContentAlignment = VerticalAlignment.Center;
     }
 
-
     private void ButtonReset_Click(object sender, RoutedEventArgs e)
     {
-        foreach (Cell tb in Position)
-        {
-            tb.textBox.Text = "";
-            tb.textBox.IsReadOnly = false;
-            tb.textBox.FontStyle = FontStyles.Normal;
-            tb.textBox.Foreground = Brushes.Black;
-            tb.textBox.FontSize = 30;
-            tb.textBox.HorizontalContentAlignment = HorizontalAlignment.Center;
-            tb.textBox.VerticalContentAlignment = VerticalAlignment.Center;
-            tb.textBox.IsReadOnly = false;
-            tb.value = 0;
-            tb.temp_solving = 0;
-            tb.PossibleValueReset();
-        }
+        Position = new Cell[9, 9];
+        FontColor = Brushes.Blue;
+        currentEstimation.Clear();
+        currentEstimation.Add(0, 0);
+        pElimination = true;
+        rows = new int[9][];
+        columns = new int[9][];
+        blocks = new int[9][];
+        SudokuGridCreation();
+        btn_Lock.IsEnabled = true;
+
     }
 
     private void ButtonLock_Click(object sender, RoutedEventArgs e)
     {
+        btn_Lock.IsEnabled = false;
         AssignValue();
         LockValue();
     }
