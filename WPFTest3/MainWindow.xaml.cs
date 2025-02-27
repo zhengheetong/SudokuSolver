@@ -523,6 +523,7 @@ public partial class MainWindow : Window
             }
             for(int j = 1; j <= 9; j+=3)
             {
+                if (!(blockrowsPair.ContainsKey(j) && blockrowsPair.ContainsKey(j + 1) && blockrowsPair.ContainsKey(j + 2))) continue;
                 string blockx, blocky, blockz;
                 blockx = String.Concat(blockrowsPair[j].OrderBy(c=>c));
                 blocky = String.Concat(blockrowsPair[j + 1].OrderBy(c=>c));
@@ -579,6 +580,7 @@ public partial class MainWindow : Window
             }
             for (int j = 1; j <= 9; j += 3)
             {
+                if (!(blockcolumnsPair.ContainsKey(j) && blockcolumnsPair.ContainsKey(j + 3) && blockcolumnsPair.ContainsKey(j + 6))) continue;
                 string blockx, blocky, blockz;
                 blockx = String.Concat(blockcolumnsPair[j].OrderBy(c=>c));
                 blocky = String.Concat(blockcolumnsPair[j + 3].OrderBy(c=>c));
