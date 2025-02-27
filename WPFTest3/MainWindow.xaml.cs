@@ -319,6 +319,7 @@ public partial class MainWindow : Window
         {
             PossibilityElimination1();
             PossibilityElimination2();
+            PossibilityElimination3();
             pElimination = false;
             return;
         }
@@ -328,7 +329,6 @@ public partial class MainWindow : Window
     }
 
     #region
-
     private void PossibilityElimination1() //identify cell with same obvious pair under same row, column, or block
     {
         var unknown = Position.Cast<Cell>().Where(p => p.value == 0);
@@ -500,6 +500,120 @@ public partial class MainWindow : Window
                 }
             }
         }
+    }
+
+    private void PossibilityElimination3()
+    {
+        var unknown = Position.Cast<Cell>().Where(p => p.value == 0);
+        #region row
+        for (int i = 1; i <= 9; i++)
+        {
+            Dictionary<int, string> blockrowsPair = new Dictionary<int, string>();
+            var temp = unknown.Where(p => p.PossibleValue.Contains(i.ToString()));
+            foreach (var p in temp)
+            {
+                if (blockrowsPair.ContainsKey(p.block) && !blockrowsPair[p.block].Contains(p.row.ToString()))
+                {
+                    blockrowsPair[p.block] += p.row.ToString();
+                }
+                else
+                {
+                    blockrowsPair[p.block] = p.row.ToString();
+                }
+            }
+            for(int j = 1; j <= 9; j+=3)
+            {
+                string blockx, blocky, blockz;
+                blockx = String.Concat(blockrowsPair[j].OrderBy(c=>c));
+                blocky = String.Concat(blockrowsPair[j + 1].OrderBy(c=>c));
+                blockz = String.Concat(blockrowsPair[j + 2].OrderBy(c => c));
+
+                int blocktochange = 0;
+                string excluding = "";
+
+                if (blockx == blocky && blockx.Length == 2) 
+                {
+                    excluding = blockx;
+                    blocktochange = j + 2; 
+                }
+                else if (blockx == blockz && blockx.Length == 2)
+                {
+                    excluding = blockx;
+                    blocktochange = j + 1;
+                }
+                else if (blocky == blockz && blocky.Length == 2)
+                {
+                    excluding = blocky;
+                    blocktochange = j;
+                }
+                else continue;
+
+                var exist = unknown
+                    .Where(u => u.block == blocktochange)
+                    .Where(u => u.PossibleValue.Contains(i.ToString()))
+                    .Where(u => u.row == excluding[0]-'0' && u.row == excluding[1]-'0');
+
+                foreach(var e in exist)
+                {
+                    e.PossibleValue[i - 1] = "  ";
+                    e.textBox.Text = e.PossibleValueinRow();
+                }
+            }
+        }
+        #endregion
+        #region column
+        for(int i = 1; i <= 9; i++)
+        {
+            Dictionary<int, string> blockcolumnsPair = new Dictionary<int, string>();
+            var temp = unknown.Where(p => p.PossibleValue.Contains(i.ToString()));
+            foreach (var p in temp)
+            {
+                if (blockcolumnsPair.ContainsKey(p.block) && !blockcolumnsPair[p.block].Contains(p.column.ToString()))
+                {
+                    blockcolumnsPair[p.block] += p.column.ToString();
+                }
+                else
+                {
+                    blockcolumnsPair[p.block] = p.column.ToString();
+                }
+            }
+            for (int j = 1; j <= 9; j += 3)
+            {
+                string blockx, blocky, blockz;
+                blockx = String.Concat(blockcolumnsPair[j].OrderBy(c=>c));
+                blocky = String.Concat(blockcolumnsPair[j + 3].OrderBy(c=>c));
+                blockz = String.Concat(blockcolumnsPair[j + 6].OrderBy(c=>c));
+                int blocktochange = 0;
+                string excluding = "";
+                if (blockx == blocky && blockx.Length == 2)
+                {
+                    excluding = blockx;
+                    blocktochange = j + 6;
+                }
+                else if (blockx == blockz && blockx.Length == 2)
+                {
+                    excluding = blockx;
+                    blocktochange = j + 3;
+                }
+                else if (blocky == blockz && blocky.Length == 2)
+                {
+                    excluding = blocky;
+                    blocktochange = j;
+                }
+                else continue;
+                var exist = unknown
+                    .Where(u => u.block == blocktochange)
+                    .Where(u => u.PossibleValue.Contains(i.ToString()))
+                    .Where(u => u.column == excluding[0] - '0' && u.column == excluding[1] - '0');
+                foreach (var e in exist)
+                {
+                    e.PossibleValue[i - 1] = "  ";
+                    e.textBox.Text = e.PossibleValueinRow();
+                }
+            }
+        }
+        #endregion
+
     }
 
     private void RemovePossibility(int row, int column, int block, int value)
