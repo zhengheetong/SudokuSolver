@@ -30,16 +30,57 @@ public partial class MainWindow : Window
     public Brush FontColor = Brushes.Blue;
     public Dictionary<int, int> currentEstimation = new Dictionary<int, int>(); 
     public bool pElimination = true;
-    public int[][] rows = new int[9][];
-    public int[][] columns = new int[9][];
-    public int[][] blocks = new int[9][];
 
     public MainWindow()
     {
         InitializeComponent();
         SudokuGridCreation();
         currentEstimation.Add(0, 0);
+        tempAdd();
     }
+
+    public void tempAdd()
+    {
+        CellAdd(0, 0, 5);
+        CellAdd(1, 0, 9);
+        CellAdd(2, 0, 7);
+        //CellAdd(2, 1, 6);
+        CellAdd(5, 0, 8);
+        CellAdd(8, 0, 1);
+        CellAdd(4, 2, 3);
+        CellAdd(6, 2, 8);
+        CellAdd(8, 2, 6);
+        CellAdd(6, 3, 4);
+        CellAdd(7, 3, 9);
+        CellAdd(8, 3, 7);
+        CellAdd(0, 4, 9);
+        CellAdd(2, 4, 8);
+        CellAdd(3, 4, 1);
+        CellAdd(4, 4, 7);
+        CellAdd(5, 4, 4);
+        CellAdd(8, 4, 2);
+        CellAdd(0, 5, 7);
+        CellAdd(7, 5, 1);
+        CellAdd(8, 5, 8);
+        CellAdd(0, 6, 2);
+        CellAdd(6, 6, 1);
+        CellAdd(1, 7, 1);
+        CellAdd(2, 7, 3);
+        CellAdd(4, 7, 2);
+        CellAdd(8, 7, 4);
+        CellAdd(4, 8, 1);
+        CellAdd(5, 8, 5);
+        CellAdd(2, 1, 6);
+        CellAdd(5, 1, 1);
+    }
+
+    public void CellAdd(int x, int y, int value)
+    {
+        Position[x, y].textBox.Text = value.ToString();
+        Position[x, y].value = value;
+        Position[x, y].textBox.IsReadOnly = true;
+    }
+
 
     #region
 
@@ -113,7 +154,6 @@ public partial class MainWindow : Window
             await Task.Delay(100);
         }
     }
-
 
     private void ButtonSolve_Click(object sender, RoutedEventArgs e)
     {
@@ -373,23 +413,22 @@ public partial class MainWindow : Window
     private void PossibilityElimination2() //identify cell with same less obvious pair under same row, column, or bloc
     {
         var unknown = Position.Cast<Cell>().Where(p => p.value == 0);
+
         for (int row = 0; row < 9; row++)
         {
             Dictionary<int, int> keyValuePairs = new Dictionary<int, int>();
             List<int> pair = new List<int>();
+            var cellinrow = unknown.Where(p => p.row == row);
             foreach (var p in unknown)
             {
-                if (p.row == row)
+                foreach (string s in p.PossibleValue)
                 {
-                    foreach (string s in p.PossibleValue)
+                    if (s.Trim() != "")
                     {
-                        if (s.Trim() != "")
-                        {
-                            if (keyValuePairs.ContainsKey(int.Parse(s)))
-                                keyValuePairs[int.Parse(s)]++;
-                            else
-                                keyValuePairs[int.Parse(s)] = 1;
-                        }
+                        if (keyValuePairs.ContainsKey(int.Parse(s)))
+                            keyValuePairs[int.Parse(s)]++;
+                        else
+                            keyValuePairs[int.Parse(s)] = 1;
                     }
                 }
             }
@@ -402,16 +441,15 @@ public partial class MainWindow : Window
             }
             for (int i = 0; i < pair.Count; i++)
             {
-                for(int j = i + 1; j < pair.Count; j++)
+                for (int j = i + 1; j < pair.Count; j++)
                 {
-                    var exist = unknown
-                        .Where(u=> u.row ==row)
-                        .Where(u=> u.PossibleValue.Contains(pair[i].ToString()))
+                    var exist = cellinrow
+                        .Where(u => u.PossibleValue.Contains(pair[i].ToString()))
                         .Where(u => u.PossibleValue.Contains(pair[j].ToString()));
                     if (exist.Count() == 2)
                     {
                         int t_block = 0;
-                        if(exist.First().block == exist.Last().block)
+                        if (exist.First().block == exist.Last().block)
                         {
                             t_block = exist.First().block;
                         }
@@ -423,6 +461,8 @@ public partial class MainWindow : Window
                         RemovePossibility(row, 0, t_block, pair[i]);
                         RemovePossibility(row, 0, t_block, pair[j]);
 
+                        Position[row1 - 1, col1 - 1].PossibleValueReset();
+                        Position[row2 - 1, col2 - 1].PossibleValueReset();
                         Position[row1 - 1, col1 - 1].PossibleValue[pair[i] - 1] = pair[i].ToString();
                         Position[row1 - 1, col1 - 1].PossibleValue[pair[j] - 1] = pair[j].ToString();
                         Position[row2 - 1, col2 - 1].PossibleValue[pair[i] - 1] = pair[i].ToString();
@@ -442,19 +482,17 @@ public partial class MainWindow : Window
         {
             Dictionary<int, int> keyValuePairs = new Dictionary<int, int>();
             List<int> pair = new List<int>();
+            var cellincol = unknown.Where(p => p.column == col);
             foreach (var p in unknown)
             {
-                if (p.column == col)
+                foreach (string s in p.PossibleValue)
                 {
-                    foreach (string s in p.PossibleValue)
+                    if (s.Trim() != "")
                     {
-                        if (s.Trim() != "")
-                        {
-                            if (keyValuePairs.ContainsKey(int.Parse(s)))
-                                keyValuePairs[int.Parse(s)]++;
-                            else
-                                keyValuePairs[int.Parse(s)] = 1;
-                        }
+                        if (keyValuePairs.ContainsKey(int.Parse(s)))
+                            keyValuePairs[int.Parse(s)]++;
+                        else
+                            keyValuePairs[int.Parse(s)] = 1;
                     }
                 }
             }
@@ -469,8 +507,7 @@ public partial class MainWindow : Window
             {
                 for (int j = i + 1; j < pair.Count; j++)
                 {
-                    var exist = unknown
-                        .Where(u => u.column == col)
+                    var exist = cellincol
                         .Where(u => u.PossibleValue.Contains(pair[i].ToString()))
                         .Where(u => u.PossibleValue.Contains(pair[j].ToString()));
                     if (exist.Count() == 2)
@@ -488,6 +525,8 @@ public partial class MainWindow : Window
                         RemovePossibility(0, col, t_block, pair[i]);
                         RemovePossibility(0, col, t_block, pair[j]);
 
+                        Position[row1 - 1, col1 - 1].PossibleValueReset();
+                        Position[row2 - 1, col2 - 1].PossibleValueReset();
                         Position[row1 - 1, col1 - 1].PossibleValue[pair[i] - 1] = pair[i].ToString();
                         Position[row1 - 1, col1 - 1].PossibleValue[pair[j] - 1] = pair[j].ToString();
                         Position[row2 - 1, col2 - 1].PossibleValue[pair[i] - 1] = pair[i].ToString();
@@ -500,9 +539,81 @@ public partial class MainWindow : Window
                 }
             }
         }
+
+        for (int block = 1; block <= 9; block++)
+        {
+            Dictionary<int, int> keyValuePairs = new Dictionary<int, int>();
+            List<int> pair = new List<int>();
+            var cellsinblock = unknown.Where(p => p.block == block);
+            foreach (var p in cellsinblock)
+            {
+                foreach (string s in p.PossibleValue)
+                {
+                    if (s.Trim() != "")
+                    {
+                        if (keyValuePairs.ContainsKey(int.Parse(s)))
+                            keyValuePairs[int.Parse(s)]++;
+                        else
+                            keyValuePairs[int.Parse(s)] = 1;
+                    }
+                }
+            }
+
+            foreach (KeyValuePair<int, int> kvp in keyValuePairs)
+            {
+                if (kvp.Value == 2)
+                {
+                    pair.Add(kvp.Key);
+                }
+            }
+
+
+            for (int i = 0; i < pair.Count; i++)
+            {
+                for (int j = i + 1; j < pair.Count; j++)
+                {
+                    var exist = cellsinblock
+                        .Where(u => u.PossibleValue.Contains(pair[i].ToString()))
+                        .Where(u => u.PossibleValue.Contains(pair[j].ToString()));
+
+                    if (exist.Count() == 2)
+                    {
+
+                        //temp
+                        foreach (var x in exist)
+                        {
+                            if (block != 1) continue;
+                            Trace.WriteLine(pair[i]);
+                            Trace.WriteLine(pair[j]);
+                        }
+
+                        int row1 = exist.First().row;
+                        int row2 = exist.Last().row;
+                        int col1 = exist.First().column;
+                        int col2 = exist.Last().column;
+
+
+                        RemovePossibility(0, 0, block, pair[i]);
+                        RemovePossibility(0, 0, block, pair[j]);
+
+
+                        Position[row1 - 1, col1 - 1].PossibleValueReset();
+                        Position[row2 - 1, col2 - 1].PossibleValueReset();
+
+                        Position[row1 - 1, col1 - 1].PossibleValue[pair[i] - 1] = pair[i].ToString();
+                        Position[row1 - 1, col1 - 1].PossibleValue[pair[j] - 1] = pair[j].ToString();
+                        Position[row2 - 1, col2 - 1].PossibleValue[pair[i] - 1] = pair[i].ToString();
+                        Position[row2 - 1, col2 - 1].PossibleValue[pair[j] - 1] = pair[j].ToString();
+
+                        Position[row1 - 1, col1 - 1].textBox.Text = Position[row1 - 1, col1 - 1].PossibleValueinRow();
+                        Position[row2 - 1, col2 - 1].textBox.Text = Position[row2 - 1, col2 - 1].PossibleValueinRow();
+                    }
+                }
+            }
+        }
     }
 
-    private void PossibilityElimination3()
+    private void PossibilityElimination3() //identify 2 blocks with same row or column with same pair to eliminate the possibility from the third block that exist same row or column of possibility
     {
         var unknown = Position.Cast<Cell>().Where(p => p.value == 0);
         #region row
@@ -525,8 +636,8 @@ public partial class MainWindow : Window
             {
                 if (!(blockrowsPair.ContainsKey(j) && blockrowsPair.ContainsKey(j + 1) && blockrowsPair.ContainsKey(j + 2))) continue;
                 string blockx, blocky, blockz;
-                blockx = String.Concat(blockrowsPair[j].OrderBy(c=>c));
-                blocky = String.Concat(blockrowsPair[j + 1].OrderBy(c=>c));
+                blockx = String.Concat(blockrowsPair[j].OrderBy(c => c));
+                blocky = String.Concat(blockrowsPair[j + 1].OrderBy(c => c));
                 blockz = String.Concat(blockrowsPair[j + 2].OrderBy(c => c));
 
                 int blocktochange = 0;
@@ -652,7 +763,6 @@ public partial class MainWindow : Window
 
     private void EstimationSolving(int key)
     {
-        //rethink logic here
         FontColor = Brushes.Purple;
 
         if (currentEstimation[key] > 1)
@@ -716,9 +826,6 @@ public partial class MainWindow : Window
         currentEstimation.Clear();
         currentEstimation.Add(0, 0);
         pElimination = true;
-        rows = new int[9][];
-        columns = new int[9][];
-        blocks = new int[9][];
         SudokuGridCreation();
         btn_Lock.IsEnabled = true;
     }
