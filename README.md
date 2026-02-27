@@ -51,6 +51,11 @@ To run this project on your local machine:
 3. Click **Solve** to watch the algorithm deduce the answers visually.
 4. Click **Reset** to clear the board and start a new puzzle.
 
+## 🏆 Credits
+
+* **Engineering & Development:** Tong Zheng Hee
+* **AI Assistance:** This README documentation was generated and structured with the help of **Google Gemini**.
+
 ## 🤝 Contributing
 Contributions, bug reports, and optimizations to the logic engine are welcome! Feel free to open an issue or submit a pull request.
 
