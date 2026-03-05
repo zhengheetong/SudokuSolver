@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 
 namespace SudokuSolver
 {
@@ -202,6 +203,10 @@ namespace SudokuSolver
 
                         p1.PossibleValues = new List<int> { val1, val2 };
                         p2.PossibleValues = new List<int> { val1, val2 };
+
+                        // FIX: Tell the UI that we gave the possibilities back!
+                        p1.UpdateUIProperties();
+                        p2.UpdateUIProperties();
                     }
                 }
             }
@@ -242,6 +247,10 @@ namespace SudokuSolver
 
                             p1.PossibleValues = new List<int> { pair[i], pair[j] };
                             p2.PossibleValues = new List<int> { pair[i], pair[j] };
+
+                            // FIX: Sync UI
+                            p1.UpdateUIProperties();
+                            p2.UpdateUIProperties();
                         }
                     }
                 }
@@ -278,6 +287,10 @@ namespace SudokuSolver
 
                             p1.PossibleValues = new List<int> { pair[i], pair[j] };
                             p2.PossibleValues = new List<int> { pair[i], pair[j] };
+
+                            // FIX: Sync UI
+                            p1.UpdateUIProperties();
+                            p2.UpdateUIProperties();
                         }
                     }
                 }
@@ -314,6 +327,10 @@ namespace SudokuSolver
 
                             p1.PossibleValues = new List<int> { pair[i], pair[j] };
                             p2.PossibleValues = new List<int> { pair[i], pair[j] };
+
+                            // FIX: Sync UI
+                            p1.UpdateUIProperties();
+                            p2.UpdateUIProperties();
                         }
                     }
                 }
@@ -358,7 +375,11 @@ namespace SudokuSolver
                         .Where(u => u.PossibleValues.Contains(i))
                         .Where(u => excluding.Contains(u.Row.ToString()));
 
-                    foreach (var e in exist) e.PossibleValues.Remove(i);
+                    foreach (var e in exist) 
+                    {
+                        e.PossibleValues.Remove(i);
+                        e.UpdateUIProperties(); // FIX: Sync UI
+                    }
                 }
             }
             
@@ -375,7 +396,8 @@ namespace SudokuSolver
                         blockcolumnsPair[p.Block] = p.Column.ToString();
                 }
                 
-                for (int j = 1; j <= 9; j += 3)
+                // FIX: Column loop needs to iterate 1, 2, 3 to correctly target vertical block columns!
+                for (int j = 1; j <= 3; j++) 
                 {
                     if (!(blockcolumnsPair.ContainsKey(j) && blockcolumnsPair.ContainsKey(j + 3) && blockcolumnsPair.ContainsKey(j + 6))) continue;
                     
@@ -396,10 +418,15 @@ namespace SudokuSolver
                         .Where(u => u.PossibleValues.Contains(i))
                         .Where(u => excluding.Contains(u.Column.ToString()));
                         
-                    foreach (var e in exist) e.PossibleValues.Remove(i);
+                    foreach (var e in exist) 
+                    {
+                        e.PossibleValues.Remove(i);
+                        e.UpdateUIProperties(); // FIX: Sync UI
+                    }
                 }
             }
         }
+
 
         private void RemovePossibility(int row, int column, int block, int value)
         {
@@ -430,34 +457,50 @@ namespace SudokuSolver
 
         private void EstimationSolving(int key)
         {
-            if (currentEstimation[key] > 1)
+            // 1. SAFETY NET: If we backtrack past depth 0, the puzzle has no solution!
+            if (key < 0)
             {
-                currentEstimation.Remove(key);
-                key--;
-                currentEstimation[key]++;
-                ClearEstimation(key);
-                EstimationSolving(key);
-                return;
-            }   
-
-            var unknown = Position.Cast<Cell>().Where(p => p.Value == 0);
-
-            foreach (var p in unknown) p.TempSolving = key;
-
-            var shortest = unknown.Where(p => p.PossibleValues.Count == 2);
-
-            if (!shortest.Any())
-            {
-                currentEstimation.Remove(key);
-                key--;
-                currentEstimation[key]++;
-                ClearEstimation(key);
-                EstimationSolving(key);
+                MessageBox.Show("This Sudoku puzzle is unsolvable!");
                 return;
             }
 
+            var unknown = Position.Cast<Cell>().Where(p => p.Value == 0).ToList();
+
+            // If there are no empty cells left, the puzzle is already solved!
+            if (!unknown.Any()) return;
+
+            // 2. DYNAMIC TARGETING: Find the absolute minimum number of possibilities left
+            // This could be 2, 3, 4, or more depending on how hard the puzzle is.
+            int minPossibilities = unknown.Min(p => p.PossibleValues.Count);
+            
+            // Target the first cell that has that minimum number
+            var shortest = unknown.Where(p => p.PossibleValues.Count == minPossibilities);
             var firstShortest = shortest.First();
-            MarkCellSolved(firstShortest, firstShortest.PossibleValues[currentEstimation.Last().Value], true);
+
+            // 3. DYNAMIC BACKTRACKING: Check if we've exhausted all guesses for THIS specific cell
+            if (currentEstimation[key] >= minPossibilities)
+            {
+                currentEstimation.Remove(key); // Clear the current depth tracker
+                key--; // Step back in time
+                
+                // Safety check again before we try to access a negative key
+                if (key < 0) 
+                {
+                    MessageBox.Show("This Sudoku puzzle is unsolvable!");
+                    return;
+                }
+
+                currentEstimation[key]++; // Move to the next guess on the previous depth
+                ClearEstimation(key);     // Wipe the board back to how it looked
+                EstimationSolving(key);   // Try again
+                return;
+            }
+
+            // Tag all currently unknown cells with the current depth key so we can roll them back later if needed
+            foreach (var p in unknown) p.TempSolving = key;
+
+            // Make the guess using the dynamic index!
+            MarkCellSolved(firstShortest, firstShortest.PossibleValues[currentEstimation[key]], true);
         }
     }
 }

@@ -113,7 +113,9 @@ namespace SudokuSolver
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    string text = UIGrid[i, j].Text;
+                    // Because we are using MVVM, we read the data directly from the DisplayText!
+                    string text = Engine.Position[i, j].DisplayText?.Trim() ?? "";
+                    
                     if (text.Length == 1 && int.TryParse(text, out int val))
                     {
                         Engine.Position[i, j].Value = val;
@@ -123,11 +125,13 @@ namespace SudokuSolver
                     {
                         Engine.Position[i, j].Value = 0;
                         Engine.Position[i, j].Status = CellStatus.Empty;
+                        
+                        // Turn on the tiny red possibility numbers for empty cells!
+                        Engine.Position[i, j].ShowPossibilities = true; 
                     }
                 }
             }
             Engine.GetAllPossibilities();
-            // Look ma, no UpdateVisualGrid() method required! XAML auto-updates!
         }
 
         private async void ButtonFastSolve_Click(object sender, RoutedEventArgs e)
