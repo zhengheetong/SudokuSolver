@@ -10,6 +10,7 @@ namespace SudokuSolver
         public Cell[,] Position;
         public Dictionary<int, int> currentEstimation = new Dictionary<int, int>();
         public bool pElimination = true;
+        public bool IsUnsolvable = false;
 
         public SudokuEngine(Cell[,] position)
         {
@@ -460,6 +461,7 @@ namespace SudokuSolver
             // 1. SAFETY NET: If we backtrack past depth 0, the puzzle has no solution!
             if (key < 0)
             {
+                IsUnsolvable = true; // FLIP IT HERE
                 MessageBox.Show("This Sudoku puzzle is unsolvable!");
                 return;
             }

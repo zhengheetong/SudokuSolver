@@ -138,10 +138,16 @@ namespace SudokuSolver
         {
             if (btn_Lock.IsEnabled) ButtonLock_Click(sender, e);
 
+            // Reset the flag just in case
+            Engine.IsUnsolvable = false;
+
             while (true)
             {
                 var solved = Engine.Position.Cast<Cell>().Where(p => p.Value == 0);
-                if (!solved.Any()) break;
+                
+                // ADD THE FLAG CHECK HERE
+                if (!solved.Any() || Engine.IsUnsolvable) break;
+                
                 else Engine.SolvePossibility(); 
                 await Task.Delay(100);
             }
