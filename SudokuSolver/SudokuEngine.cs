@@ -18,6 +18,10 @@ namespace SudokuSolver
             currentEstimation.Add(0, 0);
         }
 
+        // ==========================================
+        // CORE SOLVING LOOP
+        // ==========================================
+
         public void GetAllPossibilities()
         {
             foreach (var cell in Position)
@@ -40,29 +44,30 @@ namespace SudokuSolver
 
         public void SolvePossibility()
         {
+            // If any empty cell has zero possibilities, the current guess is invalid — backtrack
             var checkEmpty = Position.Cast<Cell>().Where(p => p.Value == 0 && p.PossibleValues.Count == 0);
-            
+
             if (checkEmpty.Any())
             {
-                ClearEstimation(currentEstimation.Last().Key); 
-                currentEstimation[currentEstimation.Last().Key]++; 
-                EstimationSolving(currentEstimation.Last().Key); 
+                ClearEstimation(currentEstimation.Last().Key);
+                currentEstimation[currentEstimation.Last().Key]++;
+                EstimationSolving(currentEstimation.Last().Key);
                 return;
             }
 
-            // Row solving
+            // Hidden Singles: if a value appears in only one cell in a row, place it
             for (int i = 0; i < 9; i++)
             {
-                Dictionary<int, int> posibilitycheck = new Dictionary<int, int>();
+                Dictionary<int, int> possibilityCheck = new Dictionary<int, int>();
                 for (int j = 0; j < 9; j++)
                 {
                     foreach (int s in Position[i, j].PossibleValues)
                     {
-                        if (posibilitycheck.ContainsKey(s)) posibilitycheck[s]++;
-                        else posibilitycheck[s] = 1;
+                        if (possibilityCheck.ContainsKey(s)) possibilityCheck[s]++;
+                        else possibilityCheck[s] = 1;
                     }
                 }
-                foreach (KeyValuePair<int, int> kvp in posibilitycheck)
+                foreach (KeyValuePair<int, int> kvp in possibilityCheck)
                 {
                     if (kvp.Value == 1)
                     {
@@ -78,19 +83,19 @@ namespace SudokuSolver
                 }
             }
 
-            // Column solving
+            // Hidden Singles: if a value appears in only one cell in a column, place it
             for (int i = 0; i < 9; i++)
             {
-                Dictionary<int, int> posibilitycheck = new Dictionary<int, int>();
+                Dictionary<int, int> possibilityCheck = new Dictionary<int, int>();
                 for (int j = 0; j < 9; j++)
                 {
                     foreach (int s in Position[j, i].PossibleValues)
                     {
-                        if (posibilitycheck.ContainsKey(s)) posibilitycheck[s]++;
-                        else posibilitycheck[s] = 1;
+                        if (possibilityCheck.ContainsKey(s)) possibilityCheck[s]++;
+                        else possibilityCheck[s] = 1;
                     }
                 }
-                foreach (KeyValuePair<int, int> kvp in posibilitycheck)
+                foreach (KeyValuePair<int, int> kvp in possibilityCheck)
                 {
                     if (kvp.Value == 1)
                     {
@@ -106,22 +111,22 @@ namespace SudokuSolver
                 }
             }
 
-            // Box solving
+            // Hidden Singles: if a value appears in only one cell in a 3x3 box, place it
             for (int i = 0; i < 9; i++)
             {
-                Dictionary<int, int> posibilitycheck = new Dictionary<int, int>();
+                Dictionary<int, int> possibilityCheck = new Dictionary<int, int>();
                 foreach (Cell c in Position)
                 {
                     if (c.Block == i + 1)
                     {
                         foreach (int s in c.PossibleValues)
                         {
-                            if (posibilitycheck.ContainsKey(s)) posibilitycheck[s]++;
-                            else posibilitycheck[s] = 1;
+                            if (possibilityCheck.ContainsKey(s)) possibilityCheck[s]++;
+                            else possibilityCheck[s] = 1;
                         }
                     }
                 }
-                foreach (KeyValuePair<int, int> kvp in posibilitycheck)
+                foreach (KeyValuePair<int, int> kvp in possibilityCheck)
                 {
                     if (kvp.Value == 1)
                     {
@@ -139,7 +144,7 @@ namespace SudokuSolver
                 }
             }
 
-            // Remaining solving (Naked singles)
+            // Naked Singles: if a cell has only one possible value, place it
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
@@ -152,11 +157,12 @@ namespace SudokuSolver
                 }
             }
 
+            // Run advanced elimination techniques before falling back to guessing
             if (pElimination)
             {
-                PossibilityElimination1();
-                PossibilityElimination2();
-                PossibilityElimination3();
+                ApplyNakedPairs();
+                ApplyHiddenPairs();
+                ApplyPointingPairs();
                 pElimination = false;
                 return;
             }
@@ -164,8 +170,8 @@ namespace SudokuSolver
             currentEstimation.Add(currentEstimation.Count, 0);
             EstimationSolving(currentEstimation.Last().Key);
         }
-        
-        // Helper method to keep logic DRY
+
+        // Marks a cell as solved, clears its candidates, and propagates the elimination
         private void MarkCellSolved(Cell cell, int value, bool isEstimation = false)
         {
             cell.Value = value;
@@ -175,7 +181,13 @@ namespace SudokuSolver
             pElimination = true;
         }
 
-        private void PossibilityElimination1()
+        // ==========================================
+        // ELIMINATION TECHNIQUES
+        // ==========================================
+
+        // Naked Pairs: if two cells in a unit share exactly the same two candidates,
+        // those values can be eliminated from all other cells in that unit.
+        private void ApplyNakedPairs()
         {
             var unknown = Position.Cast<Cell>().Where(p => p.Value == 0).ToList();
 
@@ -188,24 +200,23 @@ namespace SudokuSolver
 
                     if (p1.PossibleValues.Count == 2 && p1.PossibleValues.SequenceEqual(p2.PossibleValues))
                     {
-                        int t_row = -1, t_column = -1, t_block = -1;
+                        int targetRow = -1, targetCol = -1, targetBlock = -1;
 
-                        if (p1.Row == p2.Row) t_row = p1.Row;
-                        else if (p1.Column == p2.Column) t_column = p1.Column;
-                        if (p1.Block == p2.Block) t_block = p1.Block;
+                        if (p1.Row == p2.Row) targetRow = p1.Row;
+                        else if (p1.Column == p2.Column) targetCol = p1.Column;
+                        if (p1.Block == p2.Block) targetBlock = p1.Block;
 
-                        if (t_row == -1 && t_column == -1 && t_block == -1) continue;
+                        if (targetRow == -1 && targetCol == -1 && targetBlock == -1) continue;
 
                         int val1 = p1.PossibleValues[0];
                         int val2 = p1.PossibleValues[1];
 
-                        RemovePossibility(t_row, t_column, t_block, val1);
-                        RemovePossibility(t_row, t_column, t_block, val2);
+                        RemovePossibility(targetRow, targetCol, targetBlock, val1);
+                        RemovePossibility(targetRow, targetCol, targetBlock, val2);
 
                         p1.PossibleValues = new List<int> { val1, val2 };
                         p2.PossibleValues = new List<int> { val1, val2 };
 
-                        // FIX: Tell the UI that we gave the possibilities back!
                         p1.UpdateUIProperties();
                         p2.UpdateUIProperties();
                     }
@@ -213,43 +224,42 @@ namespace SudokuSolver
             }
         }
 
-        private void PossibilityElimination2()
+        // Hidden Pairs: if two values only appear in the same two cells across a row,
+        // column, or box, all other candidates can be removed from those two cells.
+        private void ApplyHiddenPairs()
         {
             var unknown = Position.Cast<Cell>().Where(p => p.Value == 0).ToList();
 
             for (int row = 0; row < 9; row++)
             {
-                var cellinrow = unknown.Where(p => p.Row == row).ToList();
-                var keyValuePairs = new Dictionary<int, int>();
-                
-                foreach (var p in cellinrow)
-                {
+                var cellsInRow = unknown.Where(p => p.Row == row).ToList();
+                var possibilityCount = new Dictionary<int, int>();
+
+                foreach (var p in cellsInRow)
                     foreach (int s in p.PossibleValues)
                     {
-                        if (keyValuePairs.ContainsKey(s)) keyValuePairs[s]++;
-                        else keyValuePairs[s] = 1;
+                        if (possibilityCount.ContainsKey(s)) possibilityCount[s]++;
+                        else possibilityCount[s] = 1;
                     }
-                }
 
-                var pair = keyValuePairs.Where(kvp => kvp.Value == 2).Select(kvp => kvp.Key).ToList();
-                for (int i = 0; i < pair.Count; i++)
+                var pairs = possibilityCount.Where(kvp => kvp.Value == 2).Select(kvp => kvp.Key).ToList();
+                for (int i = 0; i < pairs.Count; i++)
                 {
-                    for (int j = i + 1; j < pair.Count; j++)
+                    for (int j = i + 1; j < pairs.Count; j++)
                     {
-                        var exist = cellinrow.Where(u => u.PossibleValues.Contains(pair[i]) && u.PossibleValues.Contains(pair[j])).ToList();
+                        var exist = cellsInRow.Where(u => u.PossibleValues.Contains(pairs[i]) && u.PossibleValues.Contains(pairs[j])).ToList();
                         if (exist.Count == 2)
                         {
-                            int t_block = exist[0].Block == exist[1].Block ? exist[0].Block : -1;
+                            int targetBlock = exist[0].Block == exist[1].Block ? exist[0].Block : -1;
                             var p1 = exist[0];
                             var p2 = exist[1];
 
-                            RemovePossibility(row, -1, t_block, pair[i]);
-                            RemovePossibility(row, -1, t_block, pair[j]);
+                            RemovePossibility(row, -1, targetBlock, pairs[i]);
+                            RemovePossibility(row, -1, targetBlock, pairs[j]);
 
-                            p1.PossibleValues = new List<int> { pair[i], pair[j] };
-                            p2.PossibleValues = new List<int> { pair[i], pair[j] };
+                            p1.PossibleValues = new List<int> { pairs[i], pairs[j] };
+                            p2.PossibleValues = new List<int> { pairs[i], pairs[j] };
 
-                            // FIX: Sync UI
                             p1.UpdateUIProperties();
                             p2.UpdateUIProperties();
                         }
@@ -259,37 +269,34 @@ namespace SudokuSolver
 
             for (int col = 0; col < 9; col++)
             {
-                var cellincol = unknown.Where(p => p.Column == col).ToList();
-                var keyValuePairs = new Dictionary<int, int>();
-                
-                foreach (var p in cellincol)
-                {
+                var cellsInCol = unknown.Where(p => p.Column == col).ToList();
+                var possibilityCount = new Dictionary<int, int>();
+
+                foreach (var p in cellsInCol)
                     foreach (int s in p.PossibleValues)
                     {
-                        if (keyValuePairs.ContainsKey(s)) keyValuePairs[s]++;
-                        else keyValuePairs[s] = 1;
+                        if (possibilityCount.ContainsKey(s)) possibilityCount[s]++;
+                        else possibilityCount[s] = 1;
                     }
-                }
 
-                var pair = keyValuePairs.Where(kvp => kvp.Value == 2).Select(kvp => kvp.Key).ToList();
-                for (int i = 0; i < pair.Count; i++)
+                var pairs = possibilityCount.Where(kvp => kvp.Value == 2).Select(kvp => kvp.Key).ToList();
+                for (int i = 0; i < pairs.Count; i++)
                 {
-                    for (int j = i + 1; j < pair.Count; j++)
+                    for (int j = i + 1; j < pairs.Count; j++)
                     {
-                        var exist = cellincol.Where(u => u.PossibleValues.Contains(pair[i]) && u.PossibleValues.Contains(pair[j])).ToList();
+                        var exist = cellsInCol.Where(u => u.PossibleValues.Contains(pairs[i]) && u.PossibleValues.Contains(pairs[j])).ToList();
                         if (exist.Count == 2)
                         {
-                            int t_block = exist[0].Block == exist[1].Block ? exist[0].Block : -1;
+                            int targetBlock = exist[0].Block == exist[1].Block ? exist[0].Block : -1;
                             var p1 = exist[0];
                             var p2 = exist[1];
 
-                            RemovePossibility(-1, col, t_block, pair[i]);
-                            RemovePossibility(-1, col, t_block, pair[j]);
+                            RemovePossibility(-1, col, targetBlock, pairs[i]);
+                            RemovePossibility(-1, col, targetBlock, pairs[j]);
 
-                            p1.PossibleValues = new List<int> { pair[i], pair[j] };
-                            p2.PossibleValues = new List<int> { pair[i], pair[j] };
+                            p1.PossibleValues = new List<int> { pairs[i], pairs[j] };
+                            p2.PossibleValues = new List<int> { pairs[i], pairs[j] };
 
-                            // FIX: Sync UI
                             p1.UpdateUIProperties();
                             p2.UpdateUIProperties();
                         }
@@ -299,37 +306,33 @@ namespace SudokuSolver
 
             for (int block = 1; block <= 9; block++)
             {
-                var cellsinblock = unknown.Where(p => p.Block == block).ToList();
-                var keyValuePairs = new Dictionary<int, int>();
-                
-                foreach (var p in cellsinblock)
-                {
+                var cellsInBlock = unknown.Where(p => p.Block == block).ToList();
+                var possibilityCount = new Dictionary<int, int>();
+
+                foreach (var p in cellsInBlock)
                     foreach (int s in p.PossibleValues)
                     {
-                        if (keyValuePairs.ContainsKey(s)) keyValuePairs[s]++;
-                        else keyValuePairs[s] = 1;
+                        if (possibilityCount.ContainsKey(s)) possibilityCount[s]++;
+                        else possibilityCount[s] = 1;
                     }
-                }
 
-                var pair = keyValuePairs.Where(kvp => kvp.Value == 2).Select(kvp => kvp.Key).ToList();
-                for (int i = 0; i < pair.Count; i++)
+                var pairs = possibilityCount.Where(kvp => kvp.Value == 2).Select(kvp => kvp.Key).ToList();
+                for (int i = 0; i < pairs.Count; i++)
                 {
-                    for (int j = i + 1; j < pair.Count; j++)
+                    for (int j = i + 1; j < pairs.Count; j++)
                     {
-                        var exist = cellsinblock.Where(u => u.PossibleValues.Contains(pair[i]) && u.PossibleValues.Contains(pair[j])).ToList();
-
+                        var exist = cellsInBlock.Where(u => u.PossibleValues.Contains(pairs[i]) && u.PossibleValues.Contains(pairs[j])).ToList();
                         if (exist.Count == 2)
                         {
                             var p1 = exist[0];
                             var p2 = exist[1];
 
-                            RemovePossibility(-1, -1, block, pair[i]);
-                            RemovePossibility(-1, -1, block, pair[j]);
+                            RemovePossibility(-1, -1, block, pairs[i]);
+                            RemovePossibility(-1, -1, block, pairs[j]);
 
-                            p1.PossibleValues = new List<int> { pair[i], pair[j] };
-                            p2.PossibleValues = new List<int> { pair[i], pair[j] };
+                            p1.PossibleValues = new List<int> { pairs[i], pairs[j] };
+                            p2.PossibleValues = new List<int> { pairs[i], pairs[j] };
 
-                            // FIX: Sync UI
                             p1.UpdateUIProperties();
                             p2.UpdateUIProperties();
                         }
@@ -338,96 +341,102 @@ namespace SudokuSolver
             }
         }
 
-        private void PossibilityElimination3()
+        // Pointing Pairs: if a candidate within a box is confined to a single row or
+        // column, it can be eliminated from the rest of that row or column outside the box.
+        private void ApplyPointingPairs()
         {
             var unknown = Position.Cast<Cell>().Where(p => p.Value == 0).ToList();
-            
+
+            // Check row-aligned pointing pairs
             for (int i = 1; i <= 9; i++)
             {
-                Dictionary<int, string> blockrowsPair = new Dictionary<int, string>();
+                Dictionary<int, string> blockRowMap = new Dictionary<int, string>();
                 var temp = unknown.Where(p => p.PossibleValues.Contains(i));
-                
+
                 foreach (var p in temp)
                 {
-                    if (blockrowsPair.ContainsKey(p.Block) && !blockrowsPair[p.Block].Contains(p.Row.ToString()))
-                        blockrowsPair[p.Block] += p.Row.ToString();
-                    else if (!blockrowsPair.ContainsKey(p.Block))
-                        blockrowsPair[p.Block] = p.Row.ToString();
+                    if (blockRowMap.ContainsKey(p.Block) && !blockRowMap[p.Block].Contains(p.Row.ToString()))
+                        blockRowMap[p.Block] += p.Row.ToString();
+                    else if (!blockRowMap.ContainsKey(p.Block))
+                        blockRowMap[p.Block] = p.Row.ToString();
                 }
-                
+
                 for (int j = 1; j <= 9; j += 3)
                 {
-                    if (!(blockrowsPair.ContainsKey(j) && blockrowsPair.ContainsKey(j + 1) && blockrowsPair.ContainsKey(j + 2))) continue;
-                    
-                    string blockx = String.Concat(blockrowsPair[j].OrderBy(c => c));
-                    string blocky = String.Concat(blockrowsPair[j + 1].OrderBy(c => c));
-                    string blockz = String.Concat(blockrowsPair[j + 2].OrderBy(c => c));
+                    if (!(blockRowMap.ContainsKey(j) && blockRowMap.ContainsKey(j + 1) && blockRowMap.ContainsKey(j + 2))) continue;
 
-                    int blocktochange = 0;
+                    string blockX = String.Concat(blockRowMap[j].OrderBy(c => c));
+                    string blockY = String.Concat(blockRowMap[j + 1].OrderBy(c => c));
+                    string blockZ = String.Concat(blockRowMap[j + 2].OrderBy(c => c));
+
+                    int blockToChange = 0;
                     string excluding = "";
 
-                    if (blockx == blocky && blockx.Length == 2) { excluding = blockx; blocktochange = j + 2; }
-                    else if (blockx == blockz && blockx.Length == 2) { excluding = blockx; blocktochange = j + 1; }
-                    else if (blocky == blockz && blocky.Length == 2) { excluding = blocky; blocktochange = j; }
+                    if (blockX == blockY && blockX.Length == 2) { excluding = blockX; blockToChange = j + 2; }
+                    else if (blockX == blockZ && blockX.Length == 2) { excluding = blockX; blockToChange = j + 1; }
+                    else if (blockY == blockZ && blockY.Length == 2) { excluding = blockY; blockToChange = j; }
                     else continue;
 
                     var exist = unknown
-                        .Where(u => u.Block == blocktochange)
+                        .Where(u => u.Block == blockToChange)
                         .Where(u => u.PossibleValues.Contains(i))
                         .Where(u => excluding.Contains(u.Row.ToString()));
 
-                    foreach (var e in exist) 
+                    foreach (var e in exist)
                     {
                         e.PossibleValues.Remove(i);
-                        e.UpdateUIProperties(); // FIX: Sync UI
+                        e.UpdateUIProperties();
                     }
                 }
             }
-            
+
+            // Check column-aligned pointing pairs
             for (int i = 1; i <= 9; i++)
             {
-                Dictionary<int, string> blockcolumnsPair = new Dictionary<int, string>();
+                Dictionary<int, string> blockColMap = new Dictionary<int, string>();
                 var temp = unknown.Where(p => p.PossibleValues.Contains(i));
-                
+
                 foreach (var p in temp)
                 {
-                    if (blockcolumnsPair.ContainsKey(p.Block) && !blockcolumnsPair[p.Block].Contains(p.Column.ToString()))
-                        blockcolumnsPair[p.Block] += p.Column.ToString();
-                    else if (!blockcolumnsPair.ContainsKey(p.Block))
-                        blockcolumnsPair[p.Block] = p.Column.ToString();
+                    if (blockColMap.ContainsKey(p.Block) && !blockColMap[p.Block].Contains(p.Column.ToString()))
+                        blockColMap[p.Block] += p.Column.ToString();
+                    else if (!blockColMap.ContainsKey(p.Block))
+                        blockColMap[p.Block] = p.Column.ToString();
                 }
-                
-                // FIX: Column loop needs to iterate 1, 2, 3 to correctly target vertical block columns!
-                for (int j = 1; j <= 3; j++) 
+
+                for (int j = 1; j <= 3; j++)
                 {
-                    if (!(blockcolumnsPair.ContainsKey(j) && blockcolumnsPair.ContainsKey(j + 3) && blockcolumnsPair.ContainsKey(j + 6))) continue;
-                    
-                    string blockx = String.Concat(blockcolumnsPair[j].OrderBy(c => c));
-                    string blocky = String.Concat(blockcolumnsPair[j + 3].OrderBy(c => c));
-                    string blockz = String.Concat(blockcolumnsPair[j + 6].OrderBy(c => c));
-                    
-                    int blocktochange = 0;
+                    if (!(blockColMap.ContainsKey(j) && blockColMap.ContainsKey(j + 3) && blockColMap.ContainsKey(j + 6))) continue;
+
+                    string blockX = String.Concat(blockColMap[j].OrderBy(c => c));
+                    string blockY = String.Concat(blockColMap[j + 3].OrderBy(c => c));
+                    string blockZ = String.Concat(blockColMap[j + 6].OrderBy(c => c));
+
+                    int blockToChange = 0;
                     string excluding = "";
-                    
-                    if (blockx == blocky && blockx.Length == 2) { excluding = blockx; blocktochange = j + 6; }
-                    else if (blockx == blockz && blockx.Length == 2) { excluding = blockx; blocktochange = j + 3; }
-                    else if (blocky == blockz && blocky.Length == 2) { excluding = blocky; blocktochange = j; }
+
+                    if (blockX == blockY && blockX.Length == 2) { excluding = blockX; blockToChange = j + 6; }
+                    else if (blockX == blockZ && blockX.Length == 2) { excluding = blockX; blockToChange = j + 3; }
+                    else if (blockY == blockZ && blockY.Length == 2) { excluding = blockY; blockToChange = j; }
                     else continue;
-                    
+
                     var exist = unknown
-                        .Where(u => u.Block == blocktochange)
+                        .Where(u => u.Block == blockToChange)
                         .Where(u => u.PossibleValues.Contains(i))
                         .Where(u => excluding.Contains(u.Column.ToString()));
-                        
-                    foreach (var e in exist) 
+
+                    foreach (var e in exist)
                     {
                         e.PossibleValues.Remove(i);
-                        e.UpdateUIProperties(); // FIX: Sync UI
+                        e.UpdateUIProperties();
                     }
                 }
             }
         }
 
+        // ==========================================
+        // BACKTRACKING (ESTIMATION)
+        // ==========================================
 
         private void RemovePossibility(int row, int column, int block, int value)
         {
@@ -438,7 +447,7 @@ namespace SudokuSolver
                 if (p.Row == row || p.Column == column || p.Block == block)
                 {
                     p.PossibleValues.Remove(value);
-                    p.UpdateUIProperties(); // <--- ADD THIS LINE to alert the UI bindings
+                    p.UpdateUIProperties();
                 }
             }
         }
@@ -453,55 +462,50 @@ namespace SudokuSolver
                 r.TempSolving = key;
                 r.PossibleValueReset();
             }
-            GetAllPossibilities(); 
+            GetAllPossibilities();
         }
 
         private void EstimationSolving(int key)
         {
-            // 1. SAFETY NET: If we backtrack past depth 0, the puzzle has no solution!
+            // If we backtrack past depth 0, the puzzle has no solution
             if (key < 0)
             {
-                IsUnsolvable = true; // FLIP IT HERE
+                IsUnsolvable = true;
                 MessageBox.Show("This Sudoku puzzle is unsolvable!");
                 return;
             }
 
             var unknown = Position.Cast<Cell>().Where(p => p.Value == 0).ToList();
 
-            // If there are no empty cells left, the puzzle is already solved!
+            // No empty cells means the puzzle is solved
             if (!unknown.Any()) return;
 
-            // 2. DYNAMIC TARGETING: Find the absolute minimum number of possibilities left
-            // This could be 2, 3, 4, or more depending on how hard the puzzle is.
+            // Target the cell with the fewest remaining candidates to minimize guesses
             int minPossibilities = unknown.Min(p => p.PossibleValues.Count);
-            
-            // Target the first cell that has that minimum number
-            var shortest = unknown.Where(p => p.PossibleValues.Count == minPossibilities);
-            var firstShortest = shortest.First();
+            var firstShortest = unknown.First(p => p.PossibleValues.Count == minPossibilities);
 
-            // 3. DYNAMIC BACKTRACKING: Check if we've exhausted all guesses for THIS specific cell
+            // If all guesses for this depth are exhausted, step back one level
             if (currentEstimation[key] >= minPossibilities)
             {
-                currentEstimation.Remove(key); // Clear the current depth tracker
-                key--; // Step back in time
-                
-                // Safety check again before we try to access a negative key
-                if (key < 0) 
+                currentEstimation.Remove(key);
+                key--;
+
+                if (key < 0)
                 {
                     MessageBox.Show("This Sudoku puzzle is unsolvable!");
                     return;
                 }
 
-                currentEstimation[key]++; // Move to the next guess on the previous depth
-                ClearEstimation(key);     // Wipe the board back to how it looked
-                EstimationSolving(key);   // Try again
+                currentEstimation[key]++;
+                ClearEstimation(key);
+                EstimationSolving(key);
                 return;
             }
 
-            // Tag all currently unknown cells with the current depth key so we can roll them back later if needed
+            // Tag all unknown cells with the current depth so they can be rolled back later
             foreach (var p in unknown) p.TempSolving = key;
 
-            // Make the guess using the dynamic index!
+            // Make the guess
             MarkCellSolved(firstShortest, firstShortest.PossibleValues[currentEstimation[key]], true);
         }
     }
